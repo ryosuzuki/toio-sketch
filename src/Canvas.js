@@ -47,11 +47,12 @@ class Canvas extends Component {
     points = points.map((num, i) => {
       return (i % 2 === 0) ? num - x : num - y
     })
-    lines.push({
-      x: x,
-      y: y,
-      points: points
-    })
+    // lines.push({
+    //   x: x,
+    //   y: y,
+    //   points: points
+    // })
+    window.Physics.addLine(x, y, points)
     this.setState({ dragging: false, currentPoints: [], lines: lines })
   }
 

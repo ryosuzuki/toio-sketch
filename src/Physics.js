@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Stage, Layer, Rect, Line } from 'react-konva'
+import _ from 'lodash'
 
 import Matter from 'matter-js'
 import polyDecomp from 'poly-decomp'
@@ -14,6 +15,12 @@ class Physics extends Component {
 
     this.state = {
       bodyIds: []
+    }
+
+    this.renderStyle = {
+      strokeStyle: 'black',
+      fillStyle: 'white',
+      lineWidth: 3
     }
 
   }
@@ -73,27 +80,63 @@ class Physics extends Component {
     this.setState({ bodyIds: bodyIds })
     Matter.Composite.add(this.engine.world, Matter.Constraint.create({
       pointA: { x: 300, y: 100 },
-      bodyB: body
+      bodyB: body,
+      render: renderStyle
     }))
   }
 
-  afterUpdate() {
-    console.log('update')
-
-    for (let node of Canvas.layer.children) {
-      let id = node.id()
-      if (id.includes('line-')) {
-        this.addBody(node)
-        let body = this.engine.world.bodies[1]
-        let x = body.position.x
-        let y = body.position.y
-        let line = Canvas.state.lines[0]
-        console.log(body)
-        line.x = x
-        line.y = y
-        Canvas.setState({ lines: [line] })
-      }
+  addLine(x, y, points) {
+    let start = {
+      x: points[0] + x,
+      y: points[1] + y
     }
+    let end = {
+      x: points[points.length-2] + x,
+      y: points[points.length-1] + y,
+    }
+    console.log(start, end)
+
+    let id = 'ball-0'
+    let body = Matter.Bodies.circle(end.x, end.y, 50, { density: 0.04, frictionAir: 0.0, render: this.renderStyle })
+    body.id = id
+    Matter.Composite.add(this.engine.world, body)
+    Matter.Composite.add(this.engine.world, Matter.Constraint.create({
+      pointA: start,
+      bodyB: body,
+      render: this.renderStyle
+    }))
+  }
+
+
+  afterUpdate() {
+
+    let index = _.findIndex(this.engine.world.bodies, { id: 'ball-0' })
+    let body = this.engine.world.bodies[index]
+    if (body) {
+      console.log(body.position)
+      App.socket.emit('position', body.position)
+
+    }
+
+    // console.log('update')
+
+    // for (let node of Canvas.layer.children) {
+    //   let id = node.id()
+    //   if (id.includes('line-')) {
+    //     // this.addLine(node)
+
+    //     this.addBody(node)
+    //     let body = this.engine.world.bodies[1]
+    //     let x = body.position.x
+    //     let y = body.position.y
+    //     let line = Canvas.state.lines[0]
+    //     console.log(body)
+    //     line.x = x
+    //     line.y = y
+    //     Canvas.setState({ lines: [line] })
+
+    //   }
+    // }
 
     // let body = this.engine.world.bodies[0]
     // let x = body.position.x
