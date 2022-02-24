@@ -1,4 +1,4 @@
-// const { NearScanner } = require('@toio/scanner')
+const { NearScanner } = require('@toio/scanner')
 const { NearestScanner } = require('@toio/scanner')
 let num = 1
 
@@ -18,7 +18,7 @@ class Toio {
     // this.ids = ids
   }
 
-  move(id) {
+  move2(id) {
     let target = this.targets[id]
     let cube = this.cubes[id]
     let speed = 0
@@ -28,8 +28,12 @@ class Toio {
       speed = this.speed.x
     }
 
-    const diffX = target.x - cube.x
-    const diffY = target.y - cube.y
+    // const diffX = target.x - cube.x
+    // const diffY = target.y - cube.y
+
+    const diffX = this.targetX - cube.x
+    const diffY = this.targetY - cube.y
+
     const distance = Math.sqrt(diffX ** 2 + diffY ** 2)
 
     if (id === 2) {
@@ -66,12 +70,57 @@ class Toio {
     */
   }
 
+
+  move(targetX, targetY, cube) {
+    const diffX = targetX - cube.x
+    const diffY = targetY - cube.y
+    const distance = Math.sqrt(diffX ** 2 + diffY ** 2)
+    if (distance < 10) {
+      return [0, 0]
+    }
+
+    let relAngle = (Math.atan2(diffY, diffX) * 180) / Math.PI - cube.angle
+    relAngle = relAngle % 360
+    if (relAngle < -180) {
+      relAngle += 360
+    } else if (relAngle > 180) {
+      relAngle -= 360
+    }
+    // console.log(relAngle)
+    const ratio = Math.abs(1 - Math.abs(relAngle) / 90)
+    let speed = 40
+    if (relAngle > 0 && relAngle <= 90) {
+      // forward
+      return [speed, speed * ratio]
+    } else if (relAngle > 90) {
+      // backward
+      return [-speed, -speed * ratio]
+    } else if (relAngle < 0 && relAngle >= -90) {
+      // forward
+      return [speed * ratio, speed]
+    } else if (relAngle < -90) {
+      // backward
+      return [-speed * ratio, -speed]
+    }
+
+    if (relAngle > 0) {
+      console.log('test')
+      return [speed, speed * ratio]
+    } else {
+      console.log('test2')
+      return [speed * ratio, speed]
+    }
+
+
+
+  }
+
   async init() {
     this.io.on('connection', (socket) => {
       console.log('connected')
 
       socket.on('move', (data) => {
-        console.log(data)
+        // console.log(data)
         this.targetX = data.x
         this.targetY = data.y
       })
@@ -86,9 +135,9 @@ class Toio {
     })
 
     console.log('test')
-    // const cubes = await new NearScanner(num).start()
-    const cube = await new NearestScanner().start()
-    const cubes = [cube]
+    const cubes = await new NearScanner(num).start()
+    // const cube = await new NearestScanner().start()
+    // const cubes = [cube]
     console.log('test-2')
 
     for (let i = 0; i < num; i++) {
@@ -98,7 +147,7 @@ class Toio {
       // TODO
       // let index = this.ids.findIndex(el => el === cube.id)
       // this.cubes[index] = cube
-      this.cubes.push(cube)
+      this.cubes[i] = cube
     }
     console.log('toio connected')
 
@@ -144,7 +193,7 @@ class Toio {
         }
       }
       */
-    }, 50)
+    }, 10)
   }
 }
 

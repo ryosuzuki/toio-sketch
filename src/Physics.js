@@ -113,9 +113,12 @@ class Physics extends Component {
     let index = _.findIndex(this.engine.world.bodies, { id: 'ball-0' })
     let body = this.engine.world.bodies[index]
     if (body) {
-      console.log(body.position)
-      App.socket.emit('position', body.position)
-
+      let toioPos = {
+        x: body.position.x / 2,
+        y: body.position.y / 2,
+      }
+      App.socket.emit('move', toioPos)
+      console.log(toioPos)
     }
 
     // console.log('update')
