@@ -27,8 +27,8 @@ class Physics extends Component {
       options: {
         showPositions: true,
         showAngleIndicator: true,
-        width: 300,
-        height: 300,
+        width: 1000,
+        height: 1000,
         background: '#eee',
         wireframeBackground: '#eee'
       }
@@ -40,6 +40,15 @@ class Physics extends Component {
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
 
     this.showBox()
+
+    // let ball = Matter.Bodies.circle(100, 400, 50, { density: 0.04, frictionAir: 0.005});
+    // Matter.Composite.add(this.engine.world, ball)
+
+    // Matter.Composite.add(this.engine.world, Matter.Constraint.create({
+    //   pointA: { x: 300, y: 100 },
+    //   bodyB: ball
+    // }))
+
   }
 
   showBox() {
@@ -56,12 +65,16 @@ class Physics extends Component {
     if (this.state.bodyIds.includes(id)) return false
     let x = node.x()
     let y = node.y()
-    let body = Matter.Bodies.circle(x, y, 10)
+    let body = Matter.Bodies.circle(x, y, 10, { density: 0.04, frictionAir: 0.005})
     body.id = id
     Matter.Composite.add(this.engine.world, body)
     let bodyIds = this.state.bodyIds
     bodyIds.push(id)
     this.setState({ bodyIds: bodyIds })
+    Matter.Composite.add(this.engine.world, Matter.Constraint.create({
+      pointA: { x: 300, y: 100 },
+      bodyB: body
+    }))
   }
 
   afterUpdate() {
