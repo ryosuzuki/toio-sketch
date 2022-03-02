@@ -14,15 +14,18 @@ class Physics extends Component {
     Matter.Common.setDecomp(polyDecomp)
 
     this.state = {
+      mode:"sketch", // action or sketch
       bodyIds: []
     }
 
     this.renderStyle = {
-      strokeStyle: 'black',
+      strokeStyle: 'grey',
       fillStyle: 'white',
-      lineWidth: 3
+      lineWidth: 2
     }
 
+    this.toioCategory = 0x0001 // using collision filtering categories for toio positioning
+    this.secondCategory = 0x0002
   }
 
   componentDidMount() {
@@ -42,11 +45,30 @@ class Physics extends Component {
     })
     this.engine = engine
     this.runner = runner
+
+
+    // add mouse control
+    this.mouse = Matter.Mouse.create(this.render.canvas),
+    this.mouseConstraint = Matter.MouseConstraint.create(this.engine, {
+        mouse: this.mouse,
+        constraint: {
+            render: {
+                visible: true
+            }
+        }
+    });
+
+    // keep the mouse in sync with rendering
+    render.mouse = this.mouse;
+    Matter.Composite.add(this.engine.world, this.mouseConstraint);
+    this.setToSketch()
+
+
     Matter.Render.run(render)
     Matter.Runner.run(runner, engine)
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
 
-    this.showBox()
+    this.createBox()
 
     // let ball = Matter.Bodies.circle(100, 400, 50, { density: 0.04, frictionAir: 0.005});
     // Matter.Composite.add(this.engine.world, ball)
@@ -58,16 +80,21 @@ class Physics extends Component {
 
   }
 
-  showBox() {
-    let rect = { x: 10, y: 10, width: 20, height: 20 }
-    let ground = Matter.Bodies.rectangle(rect.x, rect.y, rect.width, rect.height, { isStatic: false, mass: 10 })
-    ground.id = 'ground'
+  createBox() { // creates walls, ceiling & floor
+    let rect = { x: 500, y: 1000, width: 1000, height: 50 }
+    let ground = Matter.Bodies.rectangle(rect.x, rect.y, rect.width, rect.height, { isStatic: true, mass: 10000})
     ground.restitution = 1
-    Matter.Composite.add(this.engine.world, ground)
+    let wallLeft = Matter.Bodies.rectangle(rect.y, rect.x, rect.height, rect.width, { isStatic: true, mass: 10000 })
+    wallLeft.restitution = 1
+    let wallRight = Matter.Bodies.rectangle(0, rect.x, rect.height, rect.width, { isStatic: true, mass: 10000 })
+    wallRight.restitution = 1
+    let ceiling = Matter.Bodies.rectangle(rect.x, 0, rect.width, rect.height, { isStatic: true, mass: 10000 })
+    ceiling.restitution = 1
+    Matter.Composite.add(this.engine.world, [ground, wallLeft, wallRight, ceiling])
     Canvas.setState({ rects: [rect] })
   }
 
-  addBody(node) {
+  addBody(node) { 
     let id = node.id()
     if (this.state.bodyIds.includes(id)) return false
     let x = node.x()
@@ -85,7 +112,30 @@ class Physics extends Component {
     }))
   }
 
-  addLine(x, y, points) {
+  setToSketch=()=>{ // called from Canvas.setToSketch - changes mode t sketch & removes mouse interaction 
+    this.setState({ mode: "sketch" })
+    this.removeMouseInteraction()
+    // console.log("sketch")
+  };
+
+  setToAction=()=>{
+    this.setState({ mode: "action" })
+    this.allowMouseInteraction()
+    // console.log("action")
+  };
+
+
+  allowMouseInteraction(){
+    Matter.Composite.add(this.engine.world, this.mouseConstraint)
+    // console.log("added")
+  }
+
+  removeMouseInteraction(){
+    Matter.Composite.remove(this.engine.world, this.mouseConstraint)
+    // console.log("removed")
+  }
+
+  addPendulum(x, y, points) {
     let start = {
       x: points[0] + x,
       y: points[1] + y
@@ -94,31 +144,86 @@ class Physics extends Component {
       x: points[points.length-2] + x,
       y: points[points.length-1] + y,
     }
-    console.log(start, end)
+    // console.log(start, end)
 
-    let id = 'ball-0'
-    let body = Matter.Bodies.circle(end.x, end.y, 50, { density: 0.04, frictionAir: 0.0, render: this.renderStyle })
-    body.id = id
+    let body = Matter.Bodies.circle(end.x, end.y, 30, { density: 0.01, frictionAir: 0.01, render: this.renderStyle })
+    body.collisionFilter.category = this.toioCategory // added to the category which will be followed by a toio
     Matter.Composite.add(this.engine.world, body)
-    Matter.Composite.add(this.engine.world, Matter.Constraint.create({
+    Matter.Composite.add(this.engine.world, Matter.Constraint.create({ // pendulum rod
       pointA: start,
       bodyB: body,
+      stiffness: 1,
       render: this.renderStyle
     }))
   }
 
+  addSpring(x, y, points) {
+    let start = {
+      x: points[0] + x,
+      y: points[1] + y
+    }
+    let end = {
+      x: points[points.length-2] + x,
+      y: points[points.length-1] + y,
+    }
+    // console.log(start, end)
+
+    let body = Matter.Bodies.polygon(end.x, end.y, 4, 30, {density: 0.04, frictionAir: 0.01, render: this.renderStyle })
+    body.collisionFilter.category = this.toioCategory
+    Matter.Composite.add(this.engine.world, body)
+    Matter.Composite.add(this.engine.world, Matter.Constraint.create({
+      pointA: start,
+      bodyB: body,
+      stiffness: 0.02,
+      render: this.renderStyle
+    }))
+  }
+
+  addSlingshot(x, y, points){
+    let start = { //slingshot anchor
+      x: points[0] + x,
+      y: points[1] + y
+    }
+    let end = {
+      x: points[points.length-2] + x,
+      y: points[points.length-1] + y,
+    }
+
+    let anchor = end;
+
+    let rock = Matter.Bodies.polygon(anchor.x, anchor.y, 5, 30, {density: 0.04, render: this.renderStyle })
+    rock.collisionFilter.category = this.toioCategory
+    let elastic = Matter.Constraint.create({
+      pointA: anchor,
+      bodyB: rock,
+      stiffness: 0.05,
+      render: this.renderStyle
+    })
+    Matter.Composite.add(this.engine.world, rock)
+    Matter.Composite.add(this.engine.world, elastic)
+
+    Matter.Events.on(this.engine,'afterUpdate',()=>{ // removes the rock from the slingshot and adds a new one
+      
+      if (this.mouseConstraint.mouse.button ===-1 && (rock.position.x > anchor.x + 20  || rock.position.y < anchor.y - 20)) 
+      {
+        rock = Matter.Bodies.polygon(anchor.x, anchor.y, 5, 30, {density: 0.04});
+        Matter.Composite.add(this.engine.world, rock);
+        elastic.bodyB = rock;
+      }
+    })
+  }
 
   afterUpdate() {
 
-    let index = _.findIndex(this.engine.world.bodies, { id: 'ball-0' })
+    let index = _.findIndex(this.engine.world.bodies, { collisionFilter: this.toioCategory }) // finds object in the toio category -  
     let body = this.engine.world.bodies[index]
     if (body) {
       let toioPos = {
         x: body.position.x / 2,
         y: body.position.y / 2,
       }
-      App.socket.emit('move', toioPos)
-      console.log(toioPos)
+      // App.socket.emit('move', toioPos) // uncomment for toio
+      // console.log(toioPos)
     }
 
     // console.log('update')

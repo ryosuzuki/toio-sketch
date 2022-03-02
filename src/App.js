@@ -8,8 +8,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     window.App = this
-    this.socket = io('http://localhost:4000/')
-
+    // this.socket = io('http://localhost:4000/') // uncomment for toio
   }
 
   componentDidMount() {
