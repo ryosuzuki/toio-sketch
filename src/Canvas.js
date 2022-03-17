@@ -10,6 +10,8 @@ class Canvas extends Component {
     this.state = {
       mode:"sketch", // sketch or action, passed on to Physics - sketch impleemnted in Canvas, action in Physics
       objectToSketch:"pendulum", // Canvas solely handles object to be sketched 
+      gravity: 1,
+      time: 1,
       dragging: false,
       currentPoints: [], // drawn points
       rects: [],
@@ -30,15 +32,26 @@ class Canvas extends Component {
     this.setToSpring = this.setToSpring.bind(this)
     this.setToPendulum = this.setToPendulum.bind(this)
     this.setToSlingshot = this.setToSlingshot.bind(this)
-    
+    this.setToSlingshot2 = this.setToSlingshot2.bind(this)
+    this.setToFreeString = this.setToFreeString.bind(this)
+    this.setToWall = this.setToWall.bind(this)
+    this.setToBox = this.setToBox.bind(this)
+    this.setGravityZero = this.setGravityZero.bind(this)
+    this.setGravityOne = this.setGravityOne.bind(this)
+    this.setTimeSpeed = this.setTimeSpeed.bind(this)
   }
 
   mouseDown(event) {
-    if(this.state.mode=="sketch")
+
+    if(event.x<1024 && event.y < 1024)
     {
-      this.setState({ dragging: true })
-      this.setState({ currentPoints: [] })
+      if(this.state.mode=="sketch")
+      {
+        this.setState({ dragging: true })
+        this.setState({ currentPoints: [] })
+      }
     }
+
   }
 
   mouseMove(event) {
@@ -77,6 +90,14 @@ class Canvas extends Component {
         window.Physics.addSpring(x, y, points)
       else if(this.state.objectToSketch=="slingshot")
         window.Physics.addSlingshot(x, y, points)
+      else if(this.state.objectToSketch=="slingshot2")
+        window.Physics.addSlingshot2(x, y, points)
+      else if(this.state.objectToSketch=="freeString")
+        window.Physics.addFreeString(x, y, points)
+      else if(this.state.objectToSketch=="wall")
+        window.Physics.addWall(x, y, points)
+      else if(this.state.objectToSketch=="box")
+        window.Physics.addBox(x, y, points)
       this.setState({ dragging: false, currentPoints: [], lines: lines })
     }
   }
@@ -102,6 +123,31 @@ class Canvas extends Component {
   setToSlingshot(){
     this.setState({ objectToSketch: "slingshot" })
   }
+  setToSlingshot2(){
+    this.setState({ objectToSketch: "slingshot2" })
+  }
+  setToFreeString(){
+    this.setState({ objectToSketch: "freeString" })
+  }
+  setToWall(){
+    this.setState({ objectToSketch: "wall" })
+  }
+  setToBox(){
+    this.setState({ objectToSketch: "box" })
+  }
+  setGravityZero(){
+    this.setState({ gravity: 0 })
+    window.Physics.gravityZero()
+  }
+  setGravityOne(){
+    this.setState({ gravity: 1 })
+    window.Physics.gravityOne()
+  }
+  setTimeSpeed(event){
+    this.setState({ time: event.target.value })
+    window.Physics.changeTime(event.target.value)
+  }
+  
 
   render() {
     return (
@@ -137,11 +183,25 @@ class Canvas extends Component {
         <button onClick={this.setToSpring} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="spring")} style={{padding:"10px", margin:"10px"}}>Spring</button>
         <button onClick={this.setToPendulum} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="pendulum")} style={{padding:"10px", margin:"10px"}}>Pendulum</button>
         <button onClick={this.setToSlingshot} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="slingshot")} style={{padding:"10px", margin:"10px"}}>Slingshot</button>
-        
+        <button onClick={this.setToSlingshot2} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="slingshot2")} style={{padding:"10px", margin:"10px"}}>Slingshot2</button>
+        <button onClick={this.setToFreeString} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="freeString")} style={{padding:"10px", margin:"10px"}}>Free String</button>
+        <button onClick={this.setToWall} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="wall")} style={{padding:"10px", margin:"10px"}}>Wall</button>
+        <button onClick={this.setToBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="box")} style={{padding:"10px", margin:"10px"}}>Box</button>
+
         <br></br>
         {"Mode: "}
        <button onClick={this.setToAction} disabled = {(this.state.mode=="action")} style={{padding:"10px", margin:"10px"}}> Performing an Action</button>
        <button onClick={this.setToSketch} disabled = {(this.state.mode=="sketch")} style={{padding:"10px", margin:"10px"}}> Sketching an Object</button>
+
+       <br></br>
+        {"Gravity: "}
+       <button onClick={this.setGravityZero} disabled = {(this.state.gravity==0)} style={{padding:"10px", margin:"10px"}}> Zero</button>
+       <button onClick={this.setGravityOne} disabled = {(this.state.gravity==1)} style={{padding:"10px", margin:"10px"}}> One</button>
+       
+       <br></br>
+       {"Time "}
+       <input onInput={this.setTimeSpeed} type="range" min="0.1" max="2" step="0.1"></input>
+
         </div>
       </>
     )
