@@ -37,6 +37,47 @@ class Canvas extends Component {
 
   mouseUp(pos) {
     this.setState({ isPaint: false })
+    if (this.state.currentPoints.length === 0) return false
+    let lines = this.state.lines
+    let physics = (this.state.isPhysics && this.state.mode === 'drawing')
+    let points = this.state.currentPoints
+    let node = new Konva.Line({ points: points })
+    let bb = node.getClientRect()
+    let x = 0, y = 0, radius = Math.min(bb.width, bb.height)
+    if (this.state.mode !== 'emitter') {
+      x = bb.x + bb.width/2
+      y = bb.y + bb.height/2
+      points = points.map((num, i) => {
+        return (i % 2 === 0) ? num - x : num - y
+      })
+    }
+    lines.push({
+      x: x, y: y,
+      radius: radius,
+      points: points,
+      type: this.state.mode,
+      physics: physics,
+    })
+    this.setState({ lines: lines, currentPoints: [] })
+    if (this.state.mode === 'emitter') {
+      this.emit.start()
+    }
+  }
+
+  changeMode(mode) {
+    this.setState({ mode: mode })
+  }
+
+  color(mode) {
+    return 'black'
+    if (mode === 'drawing') return 'red'
+    if (mode === 'emitter') return 'blue'
+    if (mode === 'motion') return 'purple'
+    return 'black'
+  }
+
+  enablePhysics() {
+    this.setState({ isPhysics: !this.state.isPhysics })
   }
 
   render() {
@@ -60,6 +101,7 @@ class Canvas extends Component {
                       y={ line.y }
                       radius={ line.radius }
                       points={ line.points }
+                      stroke={ this.color(line.type) }
                     />
                   )
               })}
