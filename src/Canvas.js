@@ -36,6 +36,9 @@ class Canvas extends Component {
     this.setToFreeString = this.setToFreeString.bind(this)
     this.setToWall = this.setToWall.bind(this)
     this.setToBox = this.setToBox.bind(this)
+    this.setToMetalBox = this.setToMetalBox.bind(this)
+    this.setToPuzzle = this.setToPuzzle.bind(this)
+    this.setToMagnet = this.setToMagnet.bind(this)
     this.setGravityZero = this.setGravityZero.bind(this)
     this.setGravityOne = this.setGravityOne.bind(this)
     this.setTimeSpeed = this.setTimeSpeed.bind(this)
@@ -43,12 +46,17 @@ class Canvas extends Component {
 
   mouseDown(event) {
 
-    if(event.x<1024 && event.y < 1024)
+    if(event.clientX<1000 && event.clientY < 1000)
     {
       if(this.state.mode=="sketch")
       {
         this.setState({ dragging: true })
-        this.setState({ currentPoints: [] })
+        let x = event.clientX
+        let y = event.clientY
+        if(x>1000 || y>1000 ) // to limit sketching on canvas
+          this.setState({ currentPoints: []})
+        else
+          this.setState({ currentPoints: [].concat([x,y]) })
       }
     }
 
@@ -61,7 +69,10 @@ class Canvas extends Component {
       let points = this.state.currentPoints
       let x = event.clientX
       let y = event.clientY
-      points = points.concat([x, y])
+      if(x>1000 || y>1000 ) // to limit sketching on canvas
+        pass
+      else
+        points = points.concat([x, y])
       this.setState({ currentPoints: points })
     }
   }
@@ -69,6 +80,7 @@ class Canvas extends Component {
   mouseUp(event) {
     if(this.state.mode=="sketch")
     {
+      console.log("up");
       let points = this.state.currentPoints
       let lines = this.state.lines
 
@@ -84,7 +96,10 @@ class Canvas extends Component {
       //   y: y,
       //   points: points
       // })
-      if(this.state.objectToSketch=="pendulum")
+
+      if(x>1024 || y>1024) // to limit sketching on canvas
+        pass
+      else if(this.state.objectToSketch=="pendulum")
         window.Physics.addPendulum(x, y, points)
       else if(this.state.objectToSketch=="spring")
         window.Physics.addSpring(x, y, points)
@@ -98,6 +113,12 @@ class Canvas extends Component {
         window.Physics.addWall(x, y, points)
       else if(this.state.objectToSketch=="box")
         window.Physics.addBox(x, y, points)
+      else if(this.state.objectToSketch=="metalbox")
+        window.Physics.addMetalBox(x, y, points)
+      else if(this.state.objectToSketch=="puzzle")
+        window.Physics.addPuzzle(x, y, points)
+      else if(this.state.objectToSketch=="magnet")
+        window.Physics.addMagnet(x, y, points)  
       this.setState({ dragging: false, currentPoints: [], lines: lines })
     }
   }
@@ -134,6 +155,15 @@ class Canvas extends Component {
   }
   setToBox(){
     this.setState({ objectToSketch: "box" })
+  }
+  setToMetalBox(){
+    this.setState({ objectToSketch: "metalbox" })
+  }
+  setToPuzzle(){
+    this.setState({ objectToSketch: "puzzle" })
+  }
+  setToMagnet(){
+    this.setState({ objectToSketch: "magnet" })
   }
   setGravityZero(){
     this.setState({ gravity: 0 })
@@ -187,6 +217,9 @@ class Canvas extends Component {
         <button onClick={this.setToFreeString} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="freeString")} style={{padding:"10px", margin:"10px"}}>Free String</button>
         <button onClick={this.setToWall} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="wall")} style={{padding:"10px", margin:"10px"}}>Wall</button>
         <button onClick={this.setToBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="box")} style={{padding:"10px", margin:"10px"}}>Box</button>
+        <button onClick={this.setToMetalBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="metalbox")} style={{padding:"10px", margin:"10px"}}>Metal Box</button>
+        <button onClick={this.setToPuzzle} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="puzzle")} style={{padding:"10px", margin:"10px"}}>Puzzle</button>
+        <button onClick={this.setToMagnet} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="magnet")} style={{padding:"10px", margin:"10px"}}>Magnets</button>
 
         <br></br>
         {"Mode: "}
