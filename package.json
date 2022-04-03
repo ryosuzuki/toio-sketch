@@ -10,6 +10,7 @@
     "express": "^4.17.3",
     "konva": "^8.2.3",
     "lodash": "^4.17.21",
+    "matter-attractors": "^0.1.6",
     "matter-js": "^0.17.1",
     "pathseg": "^1.2.1",
     "poly-decomp": "^0.3.0",

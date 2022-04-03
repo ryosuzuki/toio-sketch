@@ -1,7 +1,15 @@
 # toio-sketch
 
+## How to Get Started
+```
+npm install
+npm run start
+```
+
+
+
 ## Instructions to test
-For Toio to follow virtaul bodies - uncomment lines marked 'uncomment for toio'  
+For Toio to follow virtaul bodies - uncomment lines marked 'uncomment for toio'
 
 ## Features
 Mode - Sketch & Action  
