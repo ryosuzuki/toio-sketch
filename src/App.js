@@ -99,8 +99,7 @@ class App extends Component {
     return (
       <>
         <Canvas />
-        <a-scene background="color: #eee"
-        >
+        <a-scene background="color: #eee">
           <a-camera id="camera" look-controls="true" position="0 8 0" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
           <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 5 -10" rotation="0 0 0" width="10" height="10" color="#ccc"></a-plane>
         </a-scene>
