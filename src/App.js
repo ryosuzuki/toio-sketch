@@ -3,9 +3,11 @@ import './App.css'
 import Canvas from './Canvas2'
 import { io } from 'socket.io-client'
 
-if (!window.XR8) {
-  AFRAME = require('aframe')
-}
+// if (!window.XR8) {
+//   AFRAME = require('aframe')
+// }
+// AFRAME = require('aframe')
+// import 'xrextras'
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +15,7 @@ class App extends Component {
     window.app = this
     window.App = this
     // this.socket = io('http://localhost:4000/') // uncomment for toio
+    console.log('hoge')
 
     this.size = 1024
     this.state = {
@@ -27,28 +30,34 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log('hoge')
     this.canvas = window.Canvas
-
     AFRAME.registerComponent('drawing-plane', {
       init: () => {
-        let el = document.querySelector('#drawing-plane')
-        let mesh = el.object3D.children[0]
-        let konvaEl = document.querySelector('.konvajs-content canvas')
-        konvaEl.width = konvaEl.height = this.size
-        let texture = new THREE.Texture(konvaEl)
-        let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-        mesh.material = material
-        // mesh.material.transparent = true
-        this.mesh = mesh
-        el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
-        el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))
-        el.sceneEl.addEventListener('mouseup', this.mouseUp.bind(this))
+        console.log('fuga')
+        this.init()
       },
 
       tick: () => {
         this.update()
       }
     })
+  }
+
+  init() {
+    console.log('fuoeo')
+    let el = document.querySelector('#drawing-plane')
+    let mesh = el.object3D.children[0]
+    let konvaEl = document.querySelector('.konvajs-content canvas')
+    konvaEl.width = konvaEl.height = this.size
+    let texture = new THREE.Texture(konvaEl)
+    let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+    mesh.material = material
+    // mesh.material.transparent = true
+    this.mesh = mesh
+    el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
+    el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))
+    el.sceneEl.addEventListener('mouseup', this.mouseUp.bind(this))
   }
 
   mouseDown(event) {
@@ -99,10 +108,9 @@ class App extends Component {
     return (
       <>
         <Canvas />
-        <a-scene background="color: #eee">
-          <a-camera id="camera" look-controls="true" position="0 8 0" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
-          <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 5 -10" rotation="0 0 0" width="10" height="10" color="#ccc"></a-plane>
-        </a-scene>
+
+    {/*<a-scene background="color: #eee">*/}
+      <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 5 -10" rotation="0 0 0" width="10" height="10" color="#ccc"></a-plane>
       </>
     )
   }

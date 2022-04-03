@@ -6,7 +6,6 @@
   "main": "index.js",
   "dependencies": {
     "@toio/scanner": "^1.0.0",
-    "aframe": "^1.2.0",
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "konva": "^8.2.3",
@@ -20,7 +19,8 @@
     "react-konva": "^17.0.2-5",
     "react-scripts": "5.0.0",
     "socket.io": "^4.4.1",
-    "socket.io-client": "^4.4.1"
+    "socket.io-client": "^4.4.1",
+    "xrextras": "^0.0.4"
   },
   "scripts": {
     "start": "react-scripts start",

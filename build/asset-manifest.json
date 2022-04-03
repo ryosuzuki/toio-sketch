@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/toio-sketch/static/css/main.a75d31a5.css",
+    "main.js": "/toio-sketch/static/js/main.f8d0bd5c.js",
+    "index.html": "/toio-sketch/index.html",
+    "main.a75d31a5.css.map": "/toio-sketch/static/css/main.a75d31a5.css.map",
+    "main.f8d0bd5c.js.map": "/toio-sketch/static/js/main.f8d0bd5c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a75d31a5.css",
+    "static/js/main.f8d0bd5c.js"
+  ]
+}
