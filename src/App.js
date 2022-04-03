@@ -53,7 +53,7 @@ class App extends Component {
     let texture = new THREE.Texture(konvaEl)
     let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
     mesh.material = material
-    // mesh.material.transparent = true
+    mesh.material.transparent = true
     this.mesh = mesh
     el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
     el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))
@@ -110,7 +110,7 @@ class App extends Component {
         <Canvas />
 
     {/*<a-scene background="color: #eee">*/}
-      <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 5 -10" rotation="0 0 0" width="10" height="10" color="#ccc"></a-plane>
+      <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#ccc"></a-plane>
       </>
     )
   }
