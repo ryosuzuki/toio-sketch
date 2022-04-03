@@ -3,12 +3,6 @@ import './App.css'
 import Canvas from './Canvas2'
 import { io } from 'socket.io-client'
 
-// if (!window.XR8) {
-//   AFRAME = require('aframe')
-// }
-// AFRAME = require('aframe')
-// import 'xrextras'
-
 class App extends Component {
   constructor(props) {
     super(props)
@@ -53,7 +47,7 @@ class App extends Component {
     let texture = new THREE.Texture(konvaEl)
     let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
     mesh.material = material
-    mesh.material.transparent = true
+    // mesh.material.transparent = true
     this.mesh = mesh
     el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
     el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))
