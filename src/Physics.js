@@ -43,6 +43,8 @@ class Physics extends Component {
 
     this.toioCategory = 0x0001 // using collision filtering categories for toio positioning
     this.secondCategory = 0x0002
+
+    this.linkedBodyGroup = Matter.Body.nextGroup(true);
   }
 
   componentDidMount() {
@@ -352,18 +354,76 @@ class Physics extends Component {
     Matter.Composite.add(this.engine.world, [
         cloth
     ]);
+  }
 
-    
+  addLinkedBodies(x, y, points) {
+    let start = {
+      x: points[0] + x,
+      y: points[1] + y
+    }
+    let end = {
+      x: points[points.length-2] + x,
+      y: points[points.length-1] + y,
+    }
+    // console.log(start, end)
 
-    // let body = Matter.Bodies.polygon(end.x, end.y, 4, 30, {density: 0.04, frictionAir: 0.01, render: this.bodyRenderStyle })
-    // body.collisionFilter.category = this.toioCategory
-    // Matter.Composite.add(this.engine.world, body)
-    // Matter.Composite.add(this.engine.world, Matter.Constraint.create({
-    //   pointA: start,
-    //   bodyB: body,
-    //   stiffness: 0.02,
-    //   render: render: this.bodyRenderStyle
-    // }))
+    let storedStart = start, storedEnd = end;
+    let currentBodies = Matter.Composite.allBodies(this.engine.world);
+    // console.log(currentBodies[currentBodies.length-1].label);
+    // currentBodies[currentBodies.length-1].render.fillStyle = "red"
+    if(currentBodies[currentBodies.length-1].label=="linkedbodies")
+    {
+      let newStartBody = currentBodies[currentBodies.length-1]
+      start = newStartBody.position
+      end = storedStart
+
+
+      let dist = (Math.sqrt( ((start.x-end.x)*(start.x-end.x)) + ((start.y-end.y)*(start.y-end.y)) ))
+      // console.log(dist, Math.floor(dist/21)+1);
+      let particleRadius=10
+      let xx =start.x, yy=start.y, columns=1 , rows=Math.floor(dist/((2*particleRadius)+5)), columnGap=0, rowGap=0, crossBrace=true, particleOptions, constraintOptions;
+  
+      let Body = Matter.Body, 
+      Bodies = Matter.Bodies,
+      Common = Matter.Common,
+      Composites = Matter.Composites;
+  
+      particleOptions = Common.extend({ inertia: Infinity, friction: 0.01, collisionFilter: { group: this.linkedBodyGroup }, render:{visible:false, fillStyle:'white'}, label:"linkedbodies" }, particleOptions);
+      constraintOptions = Common.extend({ stiffness: 0.8, render: { type: 'line', anchors: false, strokeStyle:'grey' } }, constraintOptions);
+      
+      let stack_x = start.x - ((end.x-start.x)/rows); // holds the position of circles in the stack
+      let stack_y = start.y - ((end.y-start.y)/rows); // holds the position of circles in the stack
+  
+      let cloth = Composites.stack(xx, yy, columns, rows, columnGap, rowGap, function(x, y) {
+        stack_x = stack_x + ((end.x-start.x)/rows)
+        stack_y = stack_y + ((end.y-start.y)/rows)
+        if(stack_x==start.x & stack_y==start.y) return newStartBody
+        return Bodies.rectangle(stack_x, stack_y, particleRadius, particleRadius, particleOptions); //Bodies.polygon(x, y, 4, particleRadius, particleOptions)  
+      });
+  
+      Composites.mesh(cloth, columns, rows, crossBrace, constraintOptions);
+      cloth.label = 'linkedbodies';
+  
+      // for (var i = 0; i < 20; i++) {
+      //     cloth.bodies[i].isStatic = true;
+      // }
+      cloth.bodies[0].render.visible = true;
+      cloth.bodies[cloth.bodies.length-1].render.visible = true;
+      cloth.bodies[0].label="linkedbodies"
+      cloth.bodies[cloth.bodies.length-1].label="linkedbodies"
+      // cloth.bodies[0].render = this.bodyRenderStyle
+      // cloth.bodies[cloth.bodies.length-1].render = this.bodyRenderStyle
+  
+      Matter.Composite.add(this.engine.world, [
+          cloth
+      ]);
+
+    }
+    else{
+      this.linkedBodyGroup = Matter.Body.nextGroup(true);
+      let body = Matter.Bodies.rectangle(end.x, end.y, 10, 10 , { inertia: Infinity, friction: 0.01, collisionFilter: { group: this.linkedBodyGroup },render:{visible:true, fillStyle:'white'}, label:"linkedbodies"})
+      Matter.Composite.add(this.engine.world, body)
+    }
   }
 
   addWall(x, y, points) {

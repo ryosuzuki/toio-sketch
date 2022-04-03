@@ -34,6 +34,7 @@ class Canvas extends Component {
     this.setToSlingshot = this.setToSlingshot.bind(this)
     this.setToSlingshot2 = this.setToSlingshot2.bind(this)
     this.setToFreeString = this.setToFreeString.bind(this)
+    this.setToLinkedBodies = this.setToLinkedBodies.bind(this)
     this.setToWall = this.setToWall.bind(this)
     this.setToBox = this.setToBox.bind(this)
     this.setToMetalBox = this.setToMetalBox.bind(this)
@@ -109,6 +110,8 @@ class Canvas extends Component {
         window.Physics.addSlingshot2(x, y, points)
       else if(this.state.objectToSketch=="freeString")
         window.Physics.addFreeString(x, y, points)
+      else if(this.state.objectToSketch=="linkedBodies")
+        window.Physics.addLinkedBodies(x, y, points)
       else if(this.state.objectToSketch=="wall")
         window.Physics.addWall(x, y, points)
       else if(this.state.objectToSketch=="box")
@@ -149,6 +152,9 @@ class Canvas extends Component {
   }
   setToFreeString(){
     this.setState({ objectToSketch: "freeString" })
+  }
+  setToLinkedBodies(){
+    this.setState({ objectToSketch: "linkedBodies" })
   }
   setToWall(){
     this.setState({ objectToSketch: "wall" })
@@ -215,6 +221,7 @@ class Canvas extends Component {
         <button onClick={this.setToSlingshot} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="slingshot")} style={{padding:"10px", margin:"10px"}}>Slingshot</button>
         <button onClick={this.setToSlingshot2} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="slingshot2")} style={{padding:"10px", margin:"10px"}}>Slingshot2</button>
         <button onClick={this.setToFreeString} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="freeString")} style={{padding:"10px", margin:"10px"}}>Free String</button>
+        <button onClick={this.setToLinkedBodies} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="linkedBodies")} style={{padding:"10px", margin:"10px"}}>Linked Bodies</button>
         <button onClick={this.setToWall} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="wall")} style={{padding:"10px", margin:"10px"}}>Wall</button>
         <button onClick={this.setToBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="box")} style={{padding:"10px", margin:"10px"}}>Box</button>
         <button onClick={this.setToMetalBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="metalbox")} style={{padding:"10px", margin:"10px"}}>Metal Box</button>
