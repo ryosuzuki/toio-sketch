@@ -13,8 +13,8 @@ class ContextMenu extends Component {
   render() {
     return (
       <Group
-        x={ 100 }
-        y={ 200 }
+        x={ this.props.menuPos.x }
+        y={ this.props.menuPos.y }
         width={ 200 }
         height={ 50 }
       >

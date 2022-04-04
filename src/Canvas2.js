@@ -24,7 +24,10 @@ class Canvas extends Component {
       circles: [],
       currentPoints: [],
       currentPaths: [],
-      isPhysics: true
+      currentId: -1,
+      isPhysics: true,
+      event: {},
+      menuPos: { x: -100, y: -100 }
     }
   }
 
@@ -64,12 +67,14 @@ class Canvas extends Component {
 
   stageMouseDown(event) {
     console.log(event)
+    this.setState({ event: event })
     if (event.target !== this.stage) return
     let pos = this.stage.getPointerPosition()
     this.setState({ isPaint: true, currentPoints: [pos.x, pos.y, pos.x, pos.y] })
   }
 
   stageMouseMove(event) {
+    this.setState({ event: event })
     let pos = this.stage.getPointerPosition()
     if (!this.state.isPaint) return false
     let points = this.state.currentPoints
@@ -79,6 +84,7 @@ class Canvas extends Component {
   }
 
   stageMouseUp(event) {
+    this.setState({ event: event })
     let pos = this.stage.getPointerPosition()
     if (!this.state.isPaint) return false
     this.setState({ isPaint: false })
@@ -164,9 +170,19 @@ class Canvas extends Component {
     console.log('context')
   }
 
-  onClick() {
-    console.log('click')
+  onCircleClick(id) {
+    console.log(id)
+    let x = this.state.event.evt.clientX
+    let y = this.state.event.evt.clientY
+    this.setState({ menuPos: { x: x, y: y }, currentId: id })
   }
+
+  onMenuClick() {
+    let circles = this.state.circles
+    circles[this.state.currentId].physics = true
+    this.setState({ circles: circles, menuPos: { x: -100, y: -100 } })
+  }
+
 
   onMouseDown() {
     console.log(this)
@@ -174,6 +190,10 @@ class Canvas extends Component {
 
   onMouseMove() {
     console.log('move')
+  }
+
+  onMouseUp() {
+    console.log('up')
   }
 
   render() {
@@ -192,7 +212,27 @@ class Canvas extends Component {
                 points={ this.state.currentPoints }
                 stroke={ 'black' }
               />
-              <ContextMenu />
+              <Group
+                x={ this.state.menuPos.x }
+                y={ this.state.menuPos.y }
+                width={ 200 }
+                height={ 50 }
+              >
+                <Rect
+                  width={ 200 }
+                  height={ 50 }
+                  fill={ '#eee' }
+                />
+                <Text
+                  width={ 200 }
+                  height={ 50 }
+                  text={ 'Add Gravity' }
+                  fontSize={30}
+                  align={ 'center' }
+                  verticalAlign={ 'middle' }
+                  onClick={ this.onMenuClick.bind(this) }
+                />
+              </Group>
               <Group>
                 { this.state.currentPaths.map((path, i) => {
                   return (
@@ -231,8 +271,7 @@ class Canvas extends Component {
                       points={ circle.points }
                       stroke={ this.color(circle.type) }
                       draggable
-                      onMouseDown={ this.onMouseDown.bind(this) }
-                      onMouseMove={ this.onMouseMove.bind(this) }
+                      onClick={ this.onCircleClick.bind(this, i) }
                     />
                   )
               }) }
