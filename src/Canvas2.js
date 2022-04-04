@@ -3,11 +3,8 @@ import { Stage, Layer, Rect, Text, Line, Group, Circle, Path } from 'react-konva
 import Konva from 'konva'
 import _ from 'lodash'
 import pasition from 'pasition'
-
 import Physics from './Physics2'
 import Transform from './Transform'
-
-import ContextMenu from './ContextMenu'
 
 window.Konva = Konva
 let debug = false
@@ -98,7 +95,8 @@ class Canvas extends Component {
       y: oy,
       width: bb.width,
       height: bb.height,
-      type: 'rect'
+      type: 'rect',
+      physics: 'float'
     }
     if (0.6 < ratio && ratio < 1.4) {
       let radius = Math.min(bb.width, bb.height) / 2
@@ -106,7 +104,8 @@ class Canvas extends Component {
         x: ox,
         y: oy,
         radius: radius,
-        type: 'circle'
+        type: 'circle',
+        physics: 'float'
       }
     }
     let last = points.length-1
@@ -118,11 +117,10 @@ class Canvas extends Component {
         x: 0,
         y: 0,
         points: [points[0], points[1], points[last-1], points[last]],
-        type: 'line'
+        type: 'line',
+        physics: 'constraint'
       }
     }
-    console.log(shape)
-    shape.physics = false
     shape.mode = this.state.mode
     return shape
   }

@@ -17,7 +17,8 @@ class Physics extends Component {
     this.state = {
       step: 0,
       rects: [],
-      bodyIds: []
+      bodyIds: [],
+      constraintIds: []
     }
   }
 
@@ -38,6 +39,7 @@ class Physics extends Component {
     })
     this.engine = engine
     this.runner = runner
+    this.matterRender = render
     Matter.Render.run(render)
     Matter.Runner.run(runner, engine)
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
@@ -60,16 +62,16 @@ class Physics extends Component {
   addBody(node, options={}) {
     let id = node.getAttr('id')
     let bodyIds = this.state.bodyIds
-    if (bodyIds.includes(id)) return
+    if (bodyIds.includes(id)) {
+      return
+    }
     let x = node.getAttr('x')
     let y = node.getAttr('y')
     let body = null
-    let isStatic = (node.getAttr('physics') === 'static') ? true : false
     if (node.className === 'Rect') {
       let width = node.getAttr('width')
       let height = node.getAttr('height')
       body = Matter.Bodies.rectangle(x, y, width, height, {
-        isStatic: isStatic,
         render: {
           fillStyle: 'red',
           strokeStyle: 'red',
@@ -80,7 +82,6 @@ class Physics extends Component {
     if (node.className === 'Circle') {
       let radius = node.getAttr('radius') || 20
       body = Matter.Bodies.circle(x, y, radius, {
-        isStatic: isStatic,
         render: {
           fillStyle: 'red',
           strokeStyle: 'red',
@@ -96,11 +97,60 @@ class Physics extends Component {
     this.setState({ bodyIds: bodyIds })
   }
 
+  addConstraint(node) {
+    let id = node.getAttr('id')
+    let constraintIds = this.state.constraintIds
+    if (constraintIds.includes(id)) {
+      return
+    }
+    let points = node.getAttr('points')
+    let constraint = null
+    if (node.className === 'Line') {
+      // TODO: need to change the attached body based on the intersected object
+      let body = this.engine.world.bodies[0]
+      constraint = Matter.Constraint.create({
+        pointA: { x: points[0], y: points[1] },
+        bodyB: body
+      })
+    }
+    if (!constraint) return false
+    constraint.id = id
+    Matter.Composite.add(this.engine.world, constraint)
+    constraintIds.push(id)
+    this.setState({ constraintIds: constraintIds })
+  }
+
   applyPhysics(node) {
+    if (node.getAttr('physics') === 'constraint') {
+      this.addConstraint(node)
+      let id = node.getAttr('id')
+      let index = this.engine.world.constraints.map(c => c.id).indexOf(id)
+      let constraint = this.engine.world.constraints[index]
+      let points = [
+        constraint.pointA.x,
+        constraint.pointA.y,
+        constraint.bodyB.position.x,
+        constraint.bodyB.position.y,
+      ]
+      node.setAttrs({ points: points })
+      return
+    }
     this.addBody(node)
     let id = node.getAttr('id')
     let index = this.engine.world.bodies.map(b => b.id).indexOf(id)
     let body = this.engine.world.bodies[index]
+    if (node.getAttr('physics') === 'float') {
+      body.isStatic = false
+      body.isSleeping = true
+    }
+    if (node.getAttr('physics') === 'static') {
+      body.isStatic = true
+      body.isSleeping = false
+    }
+    if (node.getAttr('physics') === 'dynamic') {
+      body.isStatic = false
+      body.isSleeping = false
+    }
     let originPoint = node.getAttr('originPoint') || { x: 0, y: 0 }
     let x = body.position.x
     let y = body.position.y

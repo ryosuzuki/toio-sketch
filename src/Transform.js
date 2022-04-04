@@ -26,8 +26,8 @@ class Transform {
       d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
     }
     // line
-    if (shape.type === 'circle') {
-      d1 = 'M280,250L380,240Z'
+    if (shape.type === 'line') {
+      d1 = 'M380,240L280,250'
     }
 
     // d1 = 'M280,250L380,250'
