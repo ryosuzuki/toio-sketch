@@ -6,7 +6,7 @@ import pasition from 'pasition'
 import svgPathBbox from 'svg-path-bbox'
 import { pathParse, serializePath } from 'svg-path-parse'
 
-// import Physics from './Physics'
+import Physics from './Physics2'
 
 window.Konva = Konva
 let debug = false
@@ -78,7 +78,7 @@ class Canvas extends Component {
       y: oy,
       radius: radius,
       type: this.state.mode,
-      physics: false,
+      physics: true,
     }
     let paths = this.getPaths(points, bb)
 
@@ -136,13 +136,11 @@ class Canvas extends Component {
     }
     let ratio = bb.width / bb.height
 
-    // rectangle
     let d0 = d
+    // rectangle
     let d1 = 'M280,250L280,240L380,240L380,250Z'
-    if (0.8 < ratio && ratio < 1.2) {
-      // circle
-      d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
-    }
+    // circle
+    d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
     // d1 = 'M280,250L380,250'
     if (ratio < 0.2 || 10 < ratio) {
       let last = points.length-1
@@ -202,7 +200,6 @@ class Canvas extends Component {
     return d1
   }
 
-
   render() {
     return (
       <>
@@ -253,6 +250,9 @@ class Canvas extends Component {
                     />
                   )
               }) }
+              <Physics
+                canvas={ this }
+              />
             </Layer>
           </Stage>
         </div>

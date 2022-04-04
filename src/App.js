@@ -47,11 +47,14 @@ class App extends Component {
     let texture = new THREE.Texture(konvaEl)
     let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
     mesh.material = material
-    // mesh.material.transparent = true
+    mesh.material.transparent = true
     this.mesh = mesh
     el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
     el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))
     el.sceneEl.addEventListener('mouseup', this.mouseUp.bind(this))
+    el.sceneEl.addEventListener('touchstart', this.touchStart.bind(this))
+    el.sceneEl.addEventListener('touchmove', this.touchMove.bind(this))
+    el.sceneEl.addEventListener('touchend', this.touchEnd.bind(this))
   }
 
   mouseDown(event) {
@@ -64,6 +67,20 @@ class App extends Component {
   }
 
   mouseUp(event) {
+    this.setState({ dragging: false, initDrawing: true })
+    this.canvas.mouseUp()
+  }
+
+  touchStart(event) {
+    this.setState({ dragging: true, mouse2D: { x: 0, y: 0 } })
+  }
+
+  touchMove(event) {
+    let mouse2D = { x: event.touches[0].clientX, y: event.touches[0].clientY }
+    this.setState({ mouse2D: mouse2D })
+  }
+
+  touchEnd(event) {
     this.setState({ dragging: false, initDrawing: true })
     this.canvas.mouseUp()
   }
@@ -102,9 +119,7 @@ class App extends Component {
     return (
       <>
         <Canvas />
-
-    {/*<a-scene background="color: #eee">*/}
-      <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#ccc"></a-plane>
+        <a-plane drawing-plane id="drawing-plane" class="cantap" position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#ccc"></a-plane>
       </>
     )
   }
