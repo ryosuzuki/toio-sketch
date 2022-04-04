@@ -30,12 +30,13 @@ class Physics extends Component {
     let engine = Matter.Engine.create()
     let runner = Matter.Runner.create()
     let render = Matter.Render.create({
-      canvas: matterCanvas, // document.body, //querySelector('.konvajs-content'),
+      canvas: matterCanvas,
       engine: engine,
       options: {
         enabled: false,
         showPositions: true,
         showAngleIndicator: true,
+        showMousePosition: true,
         width: App.size,
         height: App.size,
         background: '#eee',
@@ -45,10 +46,28 @@ class Physics extends Component {
     this.engine = engine
     this.runner = runner
     this.matterRender = render
+
     this.mouse = Matter.Mouse.create(this.matterRender.canvas)
+
+    setInterval(() => {
+      console.log(this.mouse.position, this.mouse.mousedownPosition)
+    }, 100)
+
+    this.mouseConstraint = Matter.MouseConstraint.create(this.engine, {
+      mouse: this.mouse,
+      constraint: {
+        render: {
+          visible: true
+        }
+      }
+    })
+    this.matterRender.mouse = this.mouse
+    Matter.Composite.add(this.engine.world, this.mouseConstraint)
+
     Matter.Render.run(render)
     Matter.Runner.run(runner, engine)
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
+
     // this.showBox()
 
     setInterval(() => {
@@ -57,17 +76,32 @@ class Physics extends Component {
   }
 
   mouseEvent(event) {
+    // emulate mouse interaction based on 3D touch points
+    // https://github.com/liabru/matter-js/blob/master/src/core/Mouse.js
+    // if (event.type === 'mosuemove') {
+    //   this.mouse.mousemove(event)
+    // }
+    // if (event.type === 'mosuedown') {
+    //   this.mouse.mousedown(event)
+    // }
+    // if (event.type === 'mosueup') {
+    //   this.mouse.mouseup(event)
+    // }
+    // return
+
     this.mouse.absolute.x = event.clientX
     this.mouse.absolute.y = event.clientY
     this.mouse.position.x = this.mouse.absolute.x
     this.mouse.position.y = this.mouse.absolute.y
     if (event.type === 'mousemove') {
       this.mouse.sourceEvents.mousemove = event
+      this.mouse.button = 0
     }
     if (event.type === 'mousedown') {
       this.mouse.mousedownPosition.x = this.mouse.position.x
       this.mouse.mousedownPosition.y = this.mouse.position.y
       this.mouse.sourceEvents.mousedown = event
+      this.mouse.button = 0
     }
     if (event.type === 'mouseup') {
       this.mouse.mouseupPosition.x = this.mouse.position.x
@@ -76,7 +110,6 @@ class Physics extends Component {
       this.mouse.button = -1
     }
   }
-
 
   showBox() {
     let rect = { x: 400, y: 810, width: 810, height: 60 }
@@ -123,18 +156,6 @@ class Physics extends Component {
     Matter.Composite.add(this.engine.world, body)
     bodyIds.push(id)
     this.setState({ bodyIds: bodyIds })
-
-    let mouseConstraint = Matter.MouseConstraint.create(this.engine, {
-      mouse: this.mouse,
-      constraint: {
-        stiffness: 0.2,
-        render: {
-          visible: false
-        }
-      }
-    })
-    Matter.Composite.add(this.engine.world, mouseConstraint)
-
   }
 
   addConstraint(node) {
@@ -173,30 +194,30 @@ class Physics extends Component {
         constraint.bodyB.position.y,
       ]
       node.setAttrs({ points: points })
-      return
+    } else {
+      this.addBody(node)
+      let id = node.getAttr('id')
+      let index = this.engine.world.bodies.map(b => b.id).indexOf(id)
+      let body = this.engine.world.bodies[index]
+      if (node.getAttr('physics') === 'float') {
+        body.isStatic = false
+        body.isSleeping = true
+      }
+      if (node.getAttr('physics') === 'static') {
+        body.isStatic = true
+        body.isSleeping = false
+      }
+      if (node.getAttr('physics') === 'dynamic') {
+        body.isStatic = false
+        body.isSleeping = false
+      }
+      let originPoint = node.getAttr('originPoint') || { x: 0, y: 0 }
+      let x = body.position.x
+      let y = body.position.y
+      let degree = body.angle * 180 / Math.PI
+      node.setAttrs({ x: x, y: y })
+      node.rotation(degree)
     }
-    this.addBody(node)
-    let id = node.getAttr('id')
-    let index = this.engine.world.bodies.map(b => b.id).indexOf(id)
-    let body = this.engine.world.bodies[index]
-    if (node.getAttr('physics') === 'float') {
-      body.isStatic = false
-      body.isSleeping = true
-    }
-    if (node.getAttr('physics') === 'static') {
-      body.isStatic = true
-      body.isSleeping = false
-    }
-    if (node.getAttr('physics') === 'dynamic') {
-      body.isStatic = false
-      body.isSleeping = false
-    }
-    let originPoint = node.getAttr('originPoint') || { x: 0, y: 0 }
-    let x = body.position.x
-    let y = body.position.y
-    let degree = body.angle * 180 / Math.PI
-    node.setAttrs({ x: x, y: y })
-    node.rotation(degree)
   }
 
   afterUpdate() {
