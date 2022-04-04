@@ -6,7 +6,7 @@ class Transform {
   constructor() {
   }
 
-  getPaths(points, bb) {
+  getPaths(points, bb, shape) {
     let d = `M ${points[0]} ${points[1]} `
     for (let i = 0; i < points.length-1; i = i+2 ) {
       let point = points[i]
@@ -16,10 +16,13 @@ class Transform {
     let ratio = bb.width / bb.height
 
     let d0 = d
+    let d1 = d
     // rectangle
-    let d1 = 'M280,250L280,240L380,240L380,250Z'
+    if (shape.type === 'rect') {
+      d1 = 'M280,250L280,240L380,240L380,250Z'
+    }
     // circle
-    if (0.6 < ratio && ratio < 1.4) {
+    if (shape.type === 'circle') {
       d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
     }
     // d1 = 'M280,250L380,250'

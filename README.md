@@ -15,6 +15,7 @@ Make sure to be in the same network. Then, go to the URL.
 
 For example, `https://10.0.1.2:3000/toio-sketch` with your iPad or Android device. Just ignore the warning and visit the website anyway.
 
+Replace `index.html` with `index-8thwall.html` when using iPad or Android. When developing and debugging with the desktop machine, replace `index.html` with `index-desktop.html`
 
 
 ## Instructions to test
