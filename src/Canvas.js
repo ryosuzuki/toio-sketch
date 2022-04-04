@@ -1,246 +1,339 @@
 import React, { Component } from 'react'
-import { Stage, Layer, Rect, Line } from 'react-konva'
+import { Stage, Layer, Rect, Text, Line, Group, Circle, Path } from 'react-konva'
+import Konva from 'konva'
+import _ from 'lodash'
+import pasition from 'pasition'
 import Physics from './Physics'
+import Transform from './Transform'
+
+window.Konva = Konva
+let debug = false
 
 class Canvas extends Component {
   constructor(props) {
     super(props)
     window.Canvas = this
-    
+    window.canvas = this
     this.state = {
-      mode:"sketch", // sketch or action, passed on to Physics - sketch impleemnted in Canvas, action in Physics
-      objectToSketch:"pendulum", // Canvas solely handles object to be sketched 
-      gravity: 1,
-      time: 1,
-      dragging: false,
-      currentPoints: [], // drawn points
-      rects: [],
-      lines: []
+      mode: 'drawing',
+      shapes: [],
+      currentPoints: [],
+      currentPaths: [],
+      currentId: -1,
+      event: {},
+      menuPos: { x: -100, y: -100 }
     }
-
-    this.updateMode=React.createRef()
-
   }
 
   componentDidMount() {
-
-    document.addEventListener('mousedown', this.mouseDown.bind(this))
-    document.addEventListener('mousemove', this.mouseMove.bind(this))
-    document.addEventListener('mouseup', this.mouseUp.bind(this))
-    this.setToSketch = this.setToSketch.bind(this)
-    this.setToAction = this.setToAction.bind(this)
-    this.setToSpring = this.setToSpring.bind(this)
-    this.setToPendulum = this.setToPendulum.bind(this)
-    this.setToSlingshot = this.setToSlingshot.bind(this)
-    this.setToSlingshot2 = this.setToSlingshot2.bind(this)
-    this.setToFreeString = this.setToFreeString.bind(this)
-    this.setToWall = this.setToWall.bind(this)
-    this.setToBox = this.setToBox.bind(this)
-    this.setToMetalBox = this.setToMetalBox.bind(this)
-    this.setToPuzzle = this.setToPuzzle.bind(this)
-    this.setToMagnet = this.setToMagnet.bind(this)
-    this.setGravityZero = this.setGravityZero.bind(this)
-    this.setGravityOne = this.setGravityOne.bind(this)
-    this.setTimeSpeed = this.setTimeSpeed.bind(this)
+    this.stage = Konva.stages[0]
   }
 
-  mouseDown(event) {
+  mouseDown(pos) {
+    let event = {
+      clientX: pos.x,
+      clientY: pos.y,
+      type: 'mousedown'
+    }
+    this.stage._pointerdown(event)
+  }
 
-    if(event.clientX<1000 && event.clientY < 1000)
-    {
-      if(this.state.mode=="sketch")
-      {
-        this.setState({ dragging: true })
-        let x = event.clientX
-        let y = event.clientY
-        if(x>1000 || y>1000 ) // to limit sketching on canvas
-          this.setState({ currentPoints: []})
-        else
-          this.setState({ currentPoints: [].concat([x,y]) })
+  mouseMove(pos) {
+    let event = {
+      clientX: pos.x,
+      clientY: pos.y,
+      type: 'mousemove'
+    }
+    this.stage._pointermove(event)
+    Konva.DD._drag(event)
+  }
+
+  mouseUp(pos) {
+    let event = {
+      clientX: pos.x,
+      clientY: pos.y,
+      type: 'mouseup'
+    }
+    Konva.DD._endDragBefore(event)
+    this.stage._pointerup(event)
+    Konva.DD._endDragAfter(event)
+  }
+
+  stageMouseDown(event) {
+    console.log(event)
+    this.setState({ event: event })
+    if (event.target !== this.stage) return
+    let pos = this.stage.getPointerPosition()
+    this.setState({ isPaint: true, currentPoints: [pos.x, pos.y, pos.x, pos.y] })
+  }
+
+  stageMouseMove(event) {
+    this.setState({ event: event })
+    let pos = this.stage.getPointerPosition()
+    if (!this.state.isPaint) return false
+    let points = this.state.currentPoints
+    if (points[points.length-2] === pos.x && points[points.length-1] === pos.y) return false
+    points = points.concat([pos.x, pos.y])
+    this.setState({ currentPoints: points })
+  }
+
+  stageMouseUp(event) {
+    this.setState({ event: event })
+    let pos = this.stage.getPointerPosition()
+    if (!this.state.isPaint) return false
+    this.setState({ isPaint: false })
+    if (this.state.currentPoints.length === 0) return false
+    this.morph()
+  }
+
+  estimateShape(points, bb) {
+    let ratio = bb.width / bb.height
+    let ox = bb.x + bb.width / 2
+    let oy = bb.y + bb.height / 2
+    let shape = {
+      x: ox,
+      y: oy,
+      width: bb.width,
+      height: bb.height,
+      type: 'rect',
+      physics: 'float'
+    }
+    if (0.6 < ratio && ratio < 1.4) {
+      let radius = Math.min(bb.width, bb.height) / 2
+      shape = {
+        x: ox,
+        y: oy,
+        radius: radius,
+        type: 'circle',
+        physics: 'float'
       }
     }
-
-  }
-
-  mouseMove(event) {
-    if(this.state.mode=="sketch")
-    {
-      if (!this.state.dragging) return false
-      let points = this.state.currentPoints
-      let x = event.clientX
-      let y = event.clientY
-      if(x>1000 || y>1000 ) // to limit sketching on canvas
-        pass
-      else
-        points = points.concat([x, y])
-      this.setState({ currentPoints: points })
+    let last = points.length-1
+    let start = { x: points[0], y: points[1] }
+    let end = { x: points[last-1], y: points[last] }
+    let dist = Math.sqrt((end.x - start.x)**2 + (end.y - start.y)**2)
+    if (dist > bb.width || dist > bb.height) {
+      shape = {
+        x: 0,
+        y: 0,
+        points: [points[0], points[1], points[last-1], points[last]],
+        type: 'line',
+        physics: 'constraint'
+      }
     }
+    shape.mode = this.state.mode
+    return shape
   }
 
-  mouseUp(event) {
-    if(this.state.mode=="sketch")
-    {
-      console.log("up");
-      let points = this.state.currentPoints
-      let lines = this.state.lines
+  morph() {
+    let points = this.state.currentPoints
+    let node = new Konva.Line({ points: points })
+    let bb = node.getClientRect()
+    let shape = this.estimateShape(points, bb)
 
-      let node = new Konva.Line({ points: points })
-      let bb = node.getClientRect()
-      let x = bb.x + bb.width/2
-      let y = bb.y + bb.height/2
-      points = points.map((num, i) => {
-        return (i % 2 === 0) ? num - x : num - y
-      })
-      // lines.push({
-      //   x: x,
-      //   y: y,
-      //   points: points
-      // })
+    let transform = new Transform()
+    let paths = transform.getPaths(points, bb, shape)
 
-      if(x>1024 || y>1024) // to limit sketching on canvas
-        pass
-      else if(this.state.objectToSketch=="pendulum")
-        window.Physics.addPendulum(x, y, points)
-      else if(this.state.objectToSketch=="spring")
-        window.Physics.addSpring(x, y, points)
-      else if(this.state.objectToSketch=="slingshot")
-        window.Physics.addSlingshot(x, y, points)
-      else if(this.state.objectToSketch=="slingshot2")
-        window.Physics.addSlingshot2(x, y, points)
-      else if(this.state.objectToSketch=="freeString")
-        window.Physics.addFreeString(x, y, points)
-      else if(this.state.objectToSketch=="wall")
-        window.Physics.addWall(x, y, points)
-      else if(this.state.objectToSketch=="box")
-        window.Physics.addBox(x, y, points)
-      else if(this.state.objectToSketch=="metalbox")
-        window.Physics.addMetalBox(x, y, points)
-      else if(this.state.objectToSketch=="puzzle")
-        window.Physics.addPuzzle(x, y, points)
-      else if(this.state.objectToSketch=="magnet")
-        window.Physics.addMagnet(x, y, points)  
-      this.setState({ dragging: false, currentPoints: [], lines: lines })
-    }
+    let prev
+    pasition.animate({
+      from: paths.from,
+      to: paths.to,
+      time: 500,
+      begin: (shapes) => {
+        this.setState({ currentPoints: [] })
+      },
+      progress: (shapes, percent) => {
+        let paths = transform.getTransitionPaths(shapes)
+        this.setState({ currentPaths: paths })
+      },
+      end: (shapes) => {
+        this.state.shapes.push(shape)
+        this.setState({ currentPaths: [], shapes: this.state.shapes })
+      }
+    })
   }
 
-  setToSketch(){ // calls Physics.setToSketch
-    this.setState({ mode: "sketch" })
-    this.updateMode.current.setToSketch()
+  changeMode(mode) {
+    this.setState({ mode: mode })
   }
 
-  setToAction(){
-    this.setState({ mode: "action" })
-    this.updateMode.current.setToAction()
+  color(mode) {
+    return 'black'
+    if (mode === 'drawing') return 'red'
+    if (mode === 'emitter') return 'blue'
+    if (mode === 'motion') return 'purple'
+    return 'black'
   }
 
-  setToSpring(){ 
-    this.setState({ objectToSketch: "spring" })
+  onContextMenu(event) {
+    console.log(this)
+    event.evt.preventDefault()
+    console.log('context')
   }
 
-  setToPendulum(){
-    this.setState({ objectToSketch: "pendulum" })
+  onShapeClick(id) {
+    console.log(id)
+    let x = this.state.event.evt.clientX
+    let y = this.state.event.evt.clientY
+    this.setState({ menuPos: { x: x, y: y }, currentId: id })
   }
 
-  setToSlingshot(){
-    this.setState({ objectToSketch: "slingshot" })
+  onGravityClick() {
+    let shapes = this.state.shapes
+    shapes[this.state.currentId].physics = 'dynamic'
+    this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
   }
-  setToSlingshot2(){
-    this.setState({ objectToSketch: "slingshot2" })
+
+  onStaticClick() {
+    let shapes = this.state.shapes
+    shapes[this.state.currentId].physics = 'static'
+    this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
   }
-  setToFreeString(){
-    this.setState({ objectToSketch: "freeString" })
+
+  onMouseDown() {
+    console.log(this)
   }
-  setToWall(){
-    this.setState({ objectToSketch: "wall" })
+
+  onMouseMove() {
+    console.log('move')
   }
-  setToBox(){
-    this.setState({ objectToSketch: "box" })
+
+  onMouseUp() {
+    console.log('up')
   }
-  setToMetalBox(){
-    this.setState({ objectToSketch: "metalbox" })
-  }
-  setToPuzzle(){
-    this.setState({ objectToSketch: "puzzle" })
-  }
-  setToMagnet(){
-    this.setState({ objectToSketch: "magnet" })
-  }
-  setGravityZero(){
-    this.setState({ gravity: 0 })
-    window.Physics.gravityZero()
-  }
-  setGravityOne(){
-    this.setState({ gravity: 1 })
-    window.Physics.gravityOne()
-  }
-  setTimeSpeed(event){
-    this.setState({ time: event.target.value })
-    window.Physics.changeTime(event.target.value)
-  }
-  
 
   render() {
     return (
       <>
-        <Physics ref={this.updateMode}/>
-        <Stage width={ 1024 } height={ 1024 }>
-          <Layer ref={ ref => this.layer = ref }>
-            {/* { this.state.rects.map((rect, i) => { // border for rectangles
-              return (
-                <Rect x={rect.x} y={rect.y} width={rect.width} height={rect.height}      offsetX={ rect.width/2 } offsetY={ rect.height/2 } stroke={ 'black' } />
-              )
-            })} */}
-            <Line
-              points={ this.state.currentPoints }
-              stroke={ 'grey' }
-            />
-            {/* { this.state.lines.map((line, i) => {
-              return (
-                <Line
-                  id={ `line-${i}` }
-                  x={ line.x }
-                  y={ line.y }
-                  points={ line.points }
-                  stroke={ 'red' }
+        <div style={{ display: debug ? 'block' : 'none' }}>
+          <Stage
+            width={ App.size }
+            height={ App.size }
+            onMouseDown={ this.stageMouseDown.bind(this) }
+            onMouseMove={ this.stageMouseMove.bind(this) }
+            onMouseUp={ this.stageMouseUp.bind(this) }
+          >
+            <Layer ref={ ref => (this.layer = ref) }>
+              {/* Drawing Line */}
+              <Line
+                points={ this.state.currentPoints }
+                stroke={ 'black' }
+              />
+              {/* Gravity and Static Menu */}
+              <Group
+                x={ this.state.menuPos.x }
+                y={ this.state.menuPos.y }
+                width={ 200 }
+                height={ 50 }
+              >
+                <Rect
+                  width={ 200 }
+                  height={ 50 }
+                  fill={ '#eee' }
                 />
-              )
-            })} */}
-
-          </Layer>
-        </Stage>
-        <div style={{display:"block" ,fontFamily:'sans-serif'}}> 
-        {"Objects to Sketch: "}
-        <button onClick={this.setToSpring} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="spring")} style={{padding:"10px", margin:"10px"}}>Spring</button>
-        <button onClick={this.setToPendulum} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="pendulum")} style={{padding:"10px", margin:"10px"}}>Pendulum</button>
-        <button onClick={this.setToSlingshot} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="slingshot")} style={{padding:"10px", margin:"10px"}}>Slingshot</button>
-        <button onClick={this.setToSlingshot2} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="slingshot2")} style={{padding:"10px", margin:"10px"}}>Slingshot2</button>
-        <button onClick={this.setToFreeString} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="freeString")} style={{padding:"10px", margin:"10px"}}>Free String</button>
-        <button onClick={this.setToWall} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="wall")} style={{padding:"10px", margin:"10px"}}>Wall</button>
-        <button onClick={this.setToBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="box")} style={{padding:"10px", margin:"10px"}}>Box</button>
-        <button onClick={this.setToMetalBox} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="metalbox")} style={{padding:"10px", margin:"10px"}}>Metal Box</button>
-        <button onClick={this.setToPuzzle} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="puzzle")} style={{padding:"10px", margin:"10px"}}>Puzzle</button>
-        <button onClick={this.setToMagnet} disabled = {(this.state.mode=="action" || this.state.objectToSketch=="magnet")} style={{padding:"10px", margin:"10px"}}>Magnets</button>
-
-        <br></br>
-        {"Mode: "}
-       <button onClick={this.setToAction} disabled = {(this.state.mode=="action")} style={{padding:"10px", margin:"10px"}}> Performing an Action</button>
-       <button onClick={this.setToSketch} disabled = {(this.state.mode=="sketch")} style={{padding:"10px", margin:"10px"}}> Sketching an Object</button>
-
-       <br></br>
-        {"Gravity: "}
-       <button onClick={this.setGravityZero} disabled = {(this.state.gravity==0)} style={{padding:"10px", margin:"10px"}}> Zero</button>
-       <button onClick={this.setGravityOne} disabled = {(this.state.gravity==1)} style={{padding:"10px", margin:"10px"}}> One</button>
-       
-       <br></br>
-       {"Time "}
-       <input onInput={this.setTimeSpeed} type="range" min="0.1" max="2" step="0.1"></input>
-
+                <Text
+                  width={ 200 }
+                  height={ 50 }
+                  text={ 'Add Gravity' }
+                  fontSize={30}
+                  align={ 'center' }
+                  verticalAlign={ 'middle' }
+                  onClick={ this.onGravityClick.bind(this) }
+                />
+                <Rect
+                  x={ 0 }
+                  y={ 50 }
+                  width={ 200 }
+                  height={ 50 }
+                  fill={ '#eee' }
+                />
+                <Text
+                  x={ 0 }
+                  y={ 50 }
+                  width={ 200 }
+                  height={ 50 }
+                  text={ 'Static' }
+                  fontSize={30}
+                  align={ 'center' }
+                  verticalAlign={ 'middle' }
+                  onClick={ this.onStaticClick.bind(this) }
+                />
+              </Group>
+              {/* Transform Path */}
+              <Group>
+                { this.state.currentPaths.map((path, i) => {
+                  return (
+                    <Path
+                      key={ i }
+                      data={ path.data }
+                      stroke={ 'black' }
+                    />
+                  )
+                }) }
+              </Group>
+              {/* All Sketched Shapes */}
+              { this.state.shapes.map((shape, i) => {
+                  if (shape.type === 'rect') {
+                    return (
+                      <Rect
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        width={ shape.width }
+                        height={ shape.height }
+                        offsetX={ shape.width/2 }
+                        offsetY={ shape.height/2 }
+                        stroke={ this.color(shape.mode) }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+                  if (shape.type === 'circle') {
+                    return (
+                      <Circle
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        radius={ shape.radius }
+                        stroke={ this.color(shape.mode) }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+                  if (shape.type === 'line') {
+                    return (
+                      <Line
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        points={ shape.points }
+                        stroke={ this.color(shape.mode) }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+              }) }
+              <Physics
+                canvas={ this }
+              />
+            </Layer>
+          </Stage>
         </div>
       </>
     )
   }
-
-
 }
 
 export default Canvas

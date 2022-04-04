@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './App.css'
-import Canvas from './Canvas2'
+import Canvas from './Canvas'
 import { io } from 'socket.io-client'
 
 class App extends Component {
