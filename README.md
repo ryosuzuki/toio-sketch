@@ -9,6 +9,8 @@ For Mac users
 ```
 HTTPS=true npm start
 ```
+Note that, you need to use `HTTPS=true` when you try with mobile AR.
+
 
 Then, please check `System Preferences > Network`, and check the IP address.
 Make sure to be in the same network. Then, go to the URL.

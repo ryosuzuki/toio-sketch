@@ -28,7 +28,6 @@ class App extends Component {
       init: () => {
         this.init()
       },
-
       tick: () => {
         this.update()
       }
@@ -43,7 +42,9 @@ class App extends Component {
     let texture = new THREE.Texture(konvaEl)
     let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
     mesh.material = material
-    // mesh.material.transparent = true
+    if (window.location.hostname !== 'localhost') {
+      mesh.material.transparent = true
+    }
     this.mesh = mesh
     el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
     el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))

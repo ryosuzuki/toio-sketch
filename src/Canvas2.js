@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Stage, Layer, Rect, Text, Line, Group, Circle, Path } from 'react-konva'
-import { Html, Portal } from 'react-konva-utils';
 import Konva from 'konva'
 import _ from 'lodash'
 import pasition from 'pasition'
@@ -20,7 +19,6 @@ class Canvas extends Component {
     window.canvas = this
     this.state = {
       mode: 'drawing',
-      lines: [],
       shapes: [],
       currentPoints: [],
       currentPaths: [],
@@ -88,27 +86,10 @@ class Canvas extends Component {
     if (!this.state.isPaint) return false
     this.setState({ isPaint: false })
     if (this.state.currentPoints.length === 0) return false
-    let lines = this.state.lines
-    /*
-    let x = 0, y = 0, radius = Math.min(bb.width, bb.height)
-    let line = {
-      x: x,
-      y: y,
-      points: points,
-      type: this.state.mode,
-      physics: physics,
-    }
-    lines.push(line)
-    */
     this.morph()
-
-    // this.setState({ lines: lines, currentPoints: [] })
-    // if (this.state.mode === 'emitter') {
-    //   this.emit.start()
-    // }
   }
 
-  getShape(bb) {
+  estimateShape(points, bb) {
     let ratio = bb.width / bb.height
     let ox = bb.x + bb.width / 2
     let oy = bb.y + bb.height / 2
@@ -128,6 +109,19 @@ class Canvas extends Component {
         type: 'circle'
       }
     }
+    let last = points.length-1
+    let start = { x: points[0], y: points[1] }
+    let end = { x: points[last-1], y: points[last] }
+    let dist = Math.sqrt((end.x - start.x)**2 + (end.y - start.y)**2)
+    if (dist > bb.width || dist > bb.height) {
+      shape = {
+        x: 0,
+        y: 0,
+        points: [points[0], points[1], points[last-1], points[last]],
+        type: 'line'
+      }
+    }
+    console.log(shape)
     shape.physics = false
     shape.mode = this.state.mode
     return shape
@@ -137,7 +131,7 @@ class Canvas extends Component {
     let points = this.state.currentPoints
     let node = new Konva.Line({ points: points })
     let bb = node.getClientRect()
-    let shape = this.getShape(bb)
+    let shape = this.estimateShape(points, bb)
 
     let transform = new Transform()
     let paths = transform.getPaths(points, bb, shape)
@@ -222,10 +216,12 @@ class Canvas extends Component {
             onMouseUp={ this.stageMouseUp.bind(this) }
           >
             <Layer ref={ ref => (this.layer = ref) }>
+              {/* Drawing Line */}
               <Line
                 points={ this.state.currentPoints }
                 stroke={ 'black' }
               />
+              {/* Gravity and Static Menu */}
               <Group
                 x={ this.state.menuPos.x }
                 y={ this.state.menuPos.y }
@@ -265,6 +261,7 @@ class Canvas extends Component {
                   onClick={ this.onStaticClick.bind(this) }
                 />
               </Group>
+              {/* Transform Path */}
               <Group>
                 { this.state.currentPaths.map((path, i) => {
                   return (
@@ -276,20 +273,7 @@ class Canvas extends Component {
                   )
                 }) }
               </Group>
-              { this.state.lines.map((line, i) => {
-                  return (
-                    <Line
-                      key={ i }
-                      id={ `line-${i}` }
-                      name={ `line-${i}` }
-                      physics={ line.physics }
-                      x={ line.x }
-                      y={ line.y }
-                      points={ line.points }
-                      stroke={ this.color(line.type) }
-                    />
-                  )
-              }) }
+              {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
                   if (shape.type === 'rect') {
                     return (
@@ -320,6 +304,22 @@ class Canvas extends Component {
                         x={ shape.x }
                         y={ shape.y }
                         radius={ shape.radius }
+                        stroke={ this.color(shape.mode) }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+                  if (shape.type === 'line') {
+                    return (
+                      <Line
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        points={ shape.points }
                         stroke={ this.color(shape.mode) }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }

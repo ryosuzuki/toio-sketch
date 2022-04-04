@@ -25,6 +25,11 @@ class Transform {
     if (shape.type === 'circle') {
       d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
     }
+    // line
+    if (shape.type === 'circle') {
+      d1 = 'M280,250L380,240Z'
+    }
+
     // d1 = 'M280,250L380,250'
     if (ratio < 0.2 || 10 < ratio) {
       let last = points.length-1
