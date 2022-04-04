@@ -23,12 +23,17 @@ class Physics extends Component {
   }
 
   componentDidMount() {
+    let matterCanvas = document.querySelector('#matter-canvas')
+    matterCanvas.width = 1024
+    matterCanvas.height = 1024
+
     let engine = Matter.Engine.create()
     let runner = Matter.Runner.create()
     let render = Matter.Render.create({
-      element: document.getElementById('physics-container'),
+      canvas: matterCanvas, // document.body, //querySelector('.konvajs-content'),
       engine: engine,
       options: {
+        enabled: false,
         showPositions: true,
         showAngleIndicator: true,
         width: App.size,
@@ -40,6 +45,7 @@ class Physics extends Component {
     this.engine = engine
     this.runner = runner
     this.matterRender = render
+    this.mouse = Matter.Mouse.create(this.matterRender.canvas)
     Matter.Render.run(render)
     Matter.Runner.run(runner, engine)
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
@@ -49,6 +55,28 @@ class Physics extends Component {
       this.setState({ step: this.state.step + 1 })
     }, 100)
   }
+
+  mouseEvent(event) {
+    this.mouse.absolute.x = event.clientX
+    this.mouse.absolute.y = event.clientY
+    this.mouse.position.x = this.mouse.absolute.x
+    this.mouse.position.y = this.mouse.absolute.y
+    if (event.type === 'mousemove') {
+      this.mouse.sourceEvents.mousemove = event
+    }
+    if (event.type === 'mousedown') {
+      this.mouse.mousedownPosition.x = this.mouse.position.x
+      this.mouse.mousedownPosition.y = this.mouse.position.y
+      this.mouse.sourceEvents.mousedown = event
+    }
+    if (event.type === 'mouseup') {
+      this.mouse.mouseupPosition.x = this.mouse.position.x
+      this.mouse.mouseupPosition.y = this.mouse.position.y
+      this.mouse.sourceEvents.mouseup = event
+      this.mouse.button = -1
+    }
+  }
+
 
   showBox() {
     let rect = { x: 400, y: 810, width: 810, height: 60 }
@@ -95,6 +123,18 @@ class Physics extends Component {
     Matter.Composite.add(this.engine.world, body)
     bodyIds.push(id)
     this.setState({ bodyIds: bodyIds })
+
+    let mouseConstraint = Matter.MouseConstraint.create(this.engine, {
+      mouse: this.mouse,
+      constraint: {
+        stiffness: 0.2,
+        render: {
+          visible: false
+        }
+      }
+    })
+    Matter.Composite.add(this.engine.world, mouseConstraint)
+
   }
 
   addConstraint(node) {

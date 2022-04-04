@@ -30,33 +30,33 @@ class Canvas extends Component {
   }
 
   mouseDown(pos) {
-    let event = {
+    let event = new MouseEvent('mousedown' , {
       clientX: pos.x,
-      clientY: pos.y,
-      type: 'mousedown'
-    }
+      clientY: pos.y
+    })
     this.stage._pointerdown(event)
+    this.physics.mouseEvent(event)
   }
 
   mouseMove(pos) {
-    let event = {
+    let event = new MouseEvent('mousemove' , {
       clientX: pos.x,
-      clientY: pos.y,
-      type: 'mousemove'
-    }
+      clientY: pos.y
+    })
     this.stage._pointermove(event)
     Konva.DD._drag(event)
+    this.physics.mouseEvent(event)
   }
 
   mouseUp(pos) {
-    let event = {
+    let event = new MouseEvent('mouseup' , {
       clientX: pos.x,
-      clientY: pos.y,
-      type: 'mouseup'
-    }
+      clientY: pos.y
+    })
     Konva.DD._endDragBefore(event)
     this.stage._pointerup(event)
     Konva.DD._endDragAfter(event)
+    this.physics.mouseEvent(event)
   }
 
   stageMouseDown(event) {

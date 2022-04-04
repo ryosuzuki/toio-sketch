@@ -1,3 +1,7 @@
-#physics-container {
-  position: fixed;
+#matter-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  z-index: -1;
 }
