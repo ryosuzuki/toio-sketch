@@ -223,7 +223,8 @@ class Canvas extends Component {
               {/* Drawing Line */}
               <Line
                 points={ this.state.currentPoints }
-                stroke={ 'black' }
+                stroke={ App.strokeColor }
+                strokeWidth={ App.strokeWidth }
               />
               {/* Gravity and Static Menu */}
               <Group
@@ -272,7 +273,8 @@ class Canvas extends Component {
                     <Path
                       key={ i }
                       data={ path.data }
-                      stroke={ 'black' }
+                      stroke={ App.strokeColor }
+                      strokeWidth={ App.strokeWidth }
                     />
                   )
                 }) }
@@ -292,7 +294,9 @@ class Canvas extends Component {
                         height={ shape.height }
                         offsetX={ shape.width/2 }
                         offsetY={ shape.height/2 }
-                        stroke={ this.color(shape.mode) }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.strokeColor }
+                        fill={ App.fillColorAlpha }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                       />
@@ -308,7 +312,9 @@ class Canvas extends Component {
                         x={ shape.x }
                         y={ shape.y }
                         radius={ shape.radius }
-                        stroke={ this.color(shape.mode) }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.strokeColor }
+                        fill={ App.fillColorAlpha }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                       />
@@ -324,7 +330,8 @@ class Canvas extends Component {
                         x={ shape.x }
                         y={ shape.y }
                         points={ shape.points }
-                        stroke={ this.color(shape.mode) }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.strokeColor }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                       />

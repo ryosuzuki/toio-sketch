@@ -20,6 +20,10 @@ class App extends Component {
       raycaster: new THREE.Raycaster(),
       XR8: window.XR8
     }
+    this.strokeColor = '#002f2b'
+    this.fillColor = '#004842'
+    this.fillColorAlpha = 'rgba(0, 28, 26, 0.4)'
+    this.strokeWidth = 8
   }
 
   componentDidMount() {

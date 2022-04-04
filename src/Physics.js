@@ -48,11 +48,6 @@ class Physics extends Component {
     this.matterRender = render
 
     this.mouse = Matter.Mouse.create(this.matterRender.canvas)
-
-    setInterval(() => {
-      console.log(this.mouse.position, this.mouse.mousedownPosition)
-    }, 100)
-
     this.mouseConstraint = Matter.MouseConstraint.create(this.engine, {
       mouse: this.mouse,
       constraint: {
@@ -240,7 +235,9 @@ class Physics extends Component {
               height={ rect.height }
               offsetX={ rect.width/2 }
               offsetY={ rect.height/2 }
-              stroke={ 'black' }
+              stroke={ '#002f2b' }
+              strokeWidth={ 8 }
+              fill={ '#004842' }
             />
           )
         })}
