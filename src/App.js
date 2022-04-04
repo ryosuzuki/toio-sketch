@@ -47,7 +47,7 @@ class App extends Component {
     let texture = new THREE.Texture(konvaEl)
     let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
     mesh.material = material
-    mesh.material.transparent = true
+    // mesh.material.transparent = true
     this.mesh = mesh
     el.sceneEl.addEventListener('mousedown', this.mouseDown.bind(this))
     el.sceneEl.addEventListener('mousemove', this.mouseMove.bind(this))
@@ -68,7 +68,7 @@ class App extends Component {
 
   mouseUp(event) {
     this.setState({ dragging: false, initDrawing: true })
-    this.canvas.mouseUp()
+    this.canvas.mouseUp(this.state.mouse)
   }
 
   touchStart(event) {
