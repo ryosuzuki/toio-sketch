@@ -36,8 +36,8 @@ class Canvas extends Component {
       pageX: pos.x,
       pageY: pos.y,
     })
-    this.physics.mouseEvent(event)
     this.stage._pointerdown(event)
+    this.physics.mouseEvent(event)
   }
 
   mouseMove(pos) {
@@ -47,9 +47,9 @@ class Canvas extends Component {
       pageX: pos.x,
       pageY: pos.y,
     })
-    this.physics.mouseEvent(event)
     this.stage._pointermove(event)
     Konva.DD._drag(event)
+    this.physics.mouseEvent(event)
   }
 
   mouseUp(pos) {
@@ -59,10 +59,10 @@ class Canvas extends Component {
       pageX: pos.x,
       pageY: pos.y,
     })
-    this.physics.mouseEvent(event)
     Konva.DD._endDragBefore(event)
     this.stage._pointerup(event)
     Konva.DD._endDragAfter(event)
+    this.physics.mouseEvent(event)
   }
 
   stageMouseDown(event) {
@@ -246,6 +246,7 @@ class Canvas extends Component {
                   align={ 'center' }
                   verticalAlign={ 'middle' }
                   onClick={ this.onGravityClick.bind(this) }
+                  onTap={ this.onGravityClick.bind(this) }
                 />
                 <Rect
                   x={ 0 }
@@ -264,6 +265,7 @@ class Canvas extends Component {
                   align={ 'center' }
                   verticalAlign={ 'middle' }
                   onClick={ this.onStaticClick.bind(this) }
+                  onTap={ this.onStaticClick.bind(this) }
                 />
               </Group>
               {/* Transform Path */}
@@ -299,6 +301,7 @@ class Canvas extends Component {
                         fill={ App.fillColorAlpha }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
                       />
                     )
                   }
@@ -317,6 +320,7 @@ class Canvas extends Component {
                         fill={ App.fillColorAlpha }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
                       />
                     )
                   }
@@ -334,6 +338,7 @@ class Canvas extends Component {
                         stroke={ App.strokeColor }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
                       />
                     )
                   }

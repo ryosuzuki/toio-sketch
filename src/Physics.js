@@ -73,17 +73,6 @@ class Physics extends Component {
   mouseEvent(event) {
     // emulate mouse interaction based on 3D touch points
     // https://github.com/liabru/matter-js/blob/master/src/core/Mouse.js
-    // if (event.type === 'mosuemove') {
-    //   this.mouse.mousemove(event)
-    // }
-    // if (event.type === 'mosuedown') {
-    //   this.mouse.mousedown(event)
-    // }
-    // if (event.type === 'mosueup') {
-    //   this.mouse.mouseup(event)
-    // }
-    // return
-
     this.mouse.absolute.x = event.clientX
     this.mouse.absolute.y = event.clientY
     this.mouse.position.x = this.mouse.absolute.x

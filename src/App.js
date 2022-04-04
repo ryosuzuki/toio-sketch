@@ -47,6 +47,7 @@ class App extends Component {
     let material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
     mesh.material = material
     if (window.location.hostname !== 'localhost') {
+      // mesh.material.wireframe = true
       mesh.material.transparent = true
     }
     this.mesh = mesh
@@ -59,34 +60,41 @@ class App extends Component {
   }
 
   mouseDown(event) {
+    if (!window.calibrated) return false
     this.setState({ dragging: true })
   }
 
   mouseMove(event) {
+    if (!window.calibrated) return false
     let mouse2D = { x: event.clientX, y: event.clientY }
     this.setState({ mouse2D: mouse2D })
   }
 
   mouseUp(event) {
+    if (!window.calibrated) return false
     this.setState({ dragging: false, initDrawing: true })
     this.canvas.mouseUp(this.state.mouse)
   }
 
   touchStart(event) {
+    if (!window.calibrated) return false
     this.setState({ dragging: true, mouse2D: { x: 0, y: 0 } })
   }
 
   touchMove(event) {
+    if (!window.calibrated) return false
     let mouse2D = { x: event.touches[0].clientX, y: event.touches[0].clientY }
     this.setState({ mouse2D: mouse2D })
   }
 
   touchEnd(event) {
+    if (!window.calibrated) return false
     this.setState({ dragging: false, initDrawing: true })
     this.canvas.mouseUp()
   }
 
   update() {
+    if (!window.calibrated) return
     this.mesh.material.map.needsUpdate = true
     if (this.state.dragging) {
       const screenPositionX = this.state.mouse2D.x / window.innerWidth * 2 - 1

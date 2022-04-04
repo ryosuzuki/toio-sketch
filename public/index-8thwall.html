@@ -8,26 +8,46 @@
     <script async src="https://apps.8thwall.com/xrweb?appKey=aIosYEDG37bs43LDn2FWvxVSjU4XVGKwRu3M3Y7p9V1KTWrtUOXArhFOuLFpzJmw2qfV7t"></script>
 
     <script>
-      let calibrated = false
+      window.calibrated = false
+      window.calibratedPoints = []
       AFRAME.registerComponent('tap-place', {
         init() {
           const ground = document.getElementById('ground')
+          const spheres = []
           ground.addEventListener('click', (event) => {
-            if (calibrated) return false
-            const newElement = document.createElement('a-sphere')
-            const touchPoint = event.detail.intersection.point
-            newElement.setAttribute('position', touchPoint)
-            newElement.setAttribute('radius', '0.1')
-            newElement.setAttribute('color', 'red')
-            this.el.sceneEl.appendChild(newElement)
-            window.touchPoint = touchPoint
-            let el = document.querySelector('#drawing-plane')
-            el.setAttribute('position', touchPoint)
-            calibrated = true
+            if (window.calibrated) return false
+            const sphere = document.createElement('a-sphere')
+            const point = event.detail.intersection.point
+            sphere.setAttribute('position', point)
+            sphere.setAttribute('radius', '0.1')
+            sphere.setAttribute('color', 'red')
+            spheres.push(sphere)
+            this.el.sceneEl.appendChild(sphere)
+            window.calibratedPoints.push(point)
+            if (window.calibratedPoints.length === 1) {
+              let center = window.calibratedPoints[0]
+              let canvasEl = document.querySelector('#drawing-plane')
+              canvasEl.setAttribute('position', center)
+            }
+            if (window.calibratedPoints.length === 2) {
+              let p0 = window.calibratedPoints[0]
+              let p1 = window.calibratedPoints[1]
+              let vec = new THREE.Vector3(p1.x-p0.x, p1.y-p0.y, p1.z-p0.z)
+              let dist = Math.sqrt(vec.x**2 + vec.y**2 + vec.z**2)
+              let size = dist * Math.sqrt(2)
+              let canvasEl = document.querySelector('#drawing-plane')
+              canvasEl.setAttribute('width', size)
+              canvasEl.setAttribute('height', size)
+              let base = new THREE.Vector3(-5, 0, -5)
+              let angle = base.angleTo(vec) * (180 / Math.PI)
+              canvasEl.setAttribute('rotation', `-90 0 ${angle}`)
+              ground.remove()
+              spheres.map((sphere) => { sphere.remove() })
+              window.calibrated = true
+            }
           })
         },
       })
-
     </script>
 
   </head>
