@@ -25,7 +25,6 @@ class Canvas extends Component {
       currentPoints: [],
       currentPaths: [],
       currentId: -1,
-      isPhysics: true,
       event: {},
       menuPos: { x: -100, y: -100 }
     }
@@ -90,7 +89,6 @@ class Canvas extends Component {
     this.setState({ isPaint: false })
     if (this.state.currentPoints.length === 0) return false
     let lines = this.state.lines
-    let physics = (this.state.isPhysics && this.state.mode === 'drawing')
     /*
     let x = 0, y = 0, radius = Math.min(bb.width, bb.height)
     let line = {
@@ -115,8 +113,8 @@ class Canvas extends Component {
     let ox = bb.x + bb.width / 2
     let oy = bb.y + bb.height / 2
     let shape = {
-      x: bb.x,
-      y: bb.y,
+      x: ox,
+      y: oy,
       width: bb.width,
       height: bb.height,
       type: 'rect'
@@ -175,10 +173,6 @@ class Canvas extends Component {
     return 'black'
   }
 
-  enablePhysics() {
-    this.setState({ isPhysics: !this.state.isPhysics })
-  }
-
   onContextMenu(event) {
     console.log(this)
     event.evt.preventDefault()
@@ -194,13 +188,13 @@ class Canvas extends Component {
 
   onGravityClick() {
     let shapes = this.state.shapes
-    shapes[this.state.currentId].physics = true
+    shapes[this.state.currentId].physics = 'dynamic'
     this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
   }
 
   onStaticClick() {
     let shapes = this.state.shapes
-    shapes[this.state.currentId].physics = true
+    shapes[this.state.currentId].physics = 'static'
     this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
   }
 
@@ -301,13 +295,15 @@ class Canvas extends Component {
                     return (
                       <Rect
                         key={ i }
-                        id={ `shape-${i}` }
-                        name={ `shape-${i}` }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
                         physics={ shape.physics }
                         x={ shape.x }
                         y={ shape.y }
                         width={ shape.width }
                         height={ shape.height }
+                        offsetX={ shape.width/2 }
+                        offsetY={ shape.height/2 }
                         stroke={ this.color(shape.mode) }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
@@ -318,8 +314,8 @@ class Canvas extends Component {
                     return (
                       <Circle
                         key={ i }
-                        id={ `shape-${i}` }
-                        name={ `shape-${i}` }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
                         physics={ shape.physics }
                         x={ shape.x }
                         y={ shape.y }

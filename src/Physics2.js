@@ -41,7 +41,7 @@ class Physics extends Component {
     Matter.Render.run(render)
     Matter.Runner.run(runner, engine)
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
-    this.showBox()
+    // this.showBox()
 
     setInterval(() => {
       this.setState({ step: this.state.step + 1 })
@@ -63,14 +63,32 @@ class Physics extends Component {
     if (bodyIds.includes(id)) return
     let x = node.getAttr('x')
     let y = node.getAttr('y')
-    let radius = node.getAttr('radius') || 20
-    let body = Matter.Bodies.circle(x, y, radius, {
-      render: {
-        fillStyle: 'red',
-        strokeStyle: 'red',
-        lineWidth: 1,
-      }
-    })
+    let body = null
+    let isStatic = (node.getAttr('physics') === 'static') ? true : false
+    if (node.className === 'Rect') {
+      let width = node.getAttr('width')
+      let height = node.getAttr('height')
+      body = Matter.Bodies.rectangle(x, y, width, height, {
+        isStatic: isStatic,
+        render: {
+          fillStyle: 'red',
+          strokeStyle: 'red',
+          lineWidth: 1,
+        }
+      })
+    }
+    if (node.className === 'Circle') {
+      let radius = node.getAttr('radius') || 20
+      body = Matter.Bodies.circle(x, y, radius, {
+        isStatic: isStatic,
+        render: {
+          fillStyle: 'red',
+          strokeStyle: 'red',
+          lineWidth: 1,
+        }
+      })
+    }
+    if (!body) return false
     body.id = id
     body.restitution = 1
     Matter.Composite.add(this.engine.world, body)
@@ -78,7 +96,7 @@ class Physics extends Component {
     this.setState({ bodyIds: bodyIds })
   }
 
-  applyPhysics(node, reset) {
+  applyPhysics(node) {
     this.addBody(node)
     let id = node.getAttr('id')
     let index = this.engine.world.bodies.map(b => b.id).indexOf(id)
@@ -89,25 +107,12 @@ class Physics extends Component {
     let degree = body.angle * 180 / Math.PI
     node.setAttrs({ x: x, y: y })
     node.rotation(degree)
-    if (reset) {
-      console.log('reset')
-      let bodyIds = this.state.bodyIds
-      _.pull(bodyIds, id)
-      _.pullAt(this.engine.world.bodies, [index])
-      this.setState({ bodyIds: bodyIds })
-      node.setAttrs({ x: originPoint.x, y: originPoint.y })
-    }
   }
 
   afterUpdate() {
-    let reset = false
-    // if (this.state.step > this.max) {
-    //   reset = true
-    //   this.setState({ step: 0 })
-    // }
     for (let node of this.canvas.layer.children) {
       if (!node.getAttr('physics')) continue
-      this.applyPhysics(node, reset)
+      this.applyPhysics(node)
     }
   }
 

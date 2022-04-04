@@ -9,7 +9,6 @@ class App extends Component {
     window.app = this
     window.App = this
     // this.socket = io('http://localhost:4000/') // uncomment for toio
-    console.log('hoge')
 
     this.size = 1024
     this.state = {
@@ -24,11 +23,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log('hoge')
     this.canvas = window.Canvas
     AFRAME.registerComponent('drawing-plane', {
       init: () => {
-        console.log('fuga')
         this.init()
       },
 
@@ -39,7 +36,6 @@ class App extends Component {
   }
 
   init() {
-    console.log('fuoeo')
     let el = document.querySelector('#drawing-plane')
     let mesh = el.object3D.children[0]
     let konvaEl = document.querySelector('.konvajs-content canvas')
