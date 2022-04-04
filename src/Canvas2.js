@@ -21,7 +21,7 @@ class Canvas extends Component {
     this.state = {
       mode: 'drawing',
       lines: [],
-      circles: [],
+      shapes: [],
       currentPoints: [],
       currentPaths: [],
       currentId: -1,
@@ -110,23 +110,39 @@ class Canvas extends Component {
     // }
   }
 
+  getShape(bb) {
+    let ratio = bb.width / bb.height
+    let ox = bb.x + bb.width / 2
+    let oy = bb.y + bb.height / 2
+    let shape = {
+      x: bb.x,
+      y: bb.y,
+      width: bb.width,
+      height: bb.height,
+      type: 'rect'
+    }
+    if (0.6 < ratio && ratio < 1.4) {
+      let radius = Math.min(bb.width, bb.height) / 2
+      shape = {
+        x: ox,
+        y: oy,
+        radius: radius,
+        type: 'circle'
+      }
+    }
+    shape.physics = false
+    shape.mode = this.state.mode
+    return shape
+  }
 
   morph() {
     let points = this.state.currentPoints
     let node = new Konva.Line({ points: points })
     let bb = node.getClientRect()
-    let ox = bb.x + bb.width / 2
-    let oy = bb.y + bb.height / 2
-    let radius = Math.min(bb.width, bb.height) / 2
-    let circle = {
-      x: ox,
-      y: oy,
-      radius: radius,
-      type: this.state.mode,
-      physics: false,
-    }
+    let shape = this.getShape(bb)
+
     let transform = new Transform()
-    let paths = transform.getPaths(points, bb)
+    let paths = transform.getPaths(points, bb, shape)
 
     let prev
     pasition.animate({
@@ -141,9 +157,8 @@ class Canvas extends Component {
         this.setState({ currentPaths: paths })
       },
       end: (shapes) => {
-        let circles = this.state.circles
-        circles.push(circle)
-        this.setState({ currentPaths: [], circles: circles })
+        this.state.shapes.push(shape)
+        this.setState({ currentPaths: [], shapes: this.state.shapes })
       }
     })
   }
@@ -170,19 +185,24 @@ class Canvas extends Component {
     console.log('context')
   }
 
-  onCircleClick(id) {
+  onShapeClick(id) {
     console.log(id)
     let x = this.state.event.evt.clientX
     let y = this.state.event.evt.clientY
     this.setState({ menuPos: { x: x, y: y }, currentId: id })
   }
 
-  onMenuClick() {
-    let circles = this.state.circles
-    circles[this.state.currentId].physics = true
-    this.setState({ circles: circles, menuPos: { x: -100, y: -100 } })
+  onGravityClick() {
+    let shapes = this.state.shapes
+    shapes[this.state.currentId].physics = true
+    this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
   }
 
+  onStaticClick() {
+    let shapes = this.state.shapes
+    shapes[this.state.currentId].physics = true
+    this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
+  }
 
   onMouseDown() {
     console.log(this)
@@ -230,7 +250,25 @@ class Canvas extends Component {
                   fontSize={30}
                   align={ 'center' }
                   verticalAlign={ 'middle' }
-                  onClick={ this.onMenuClick.bind(this) }
+                  onClick={ this.onGravityClick.bind(this) }
+                />
+                <Rect
+                  x={ 0 }
+                  y={ 50 }
+                  width={ 200 }
+                  height={ 50 }
+                  fill={ '#eee' }
+                />
+                <Text
+                  x={ 0 }
+                  y={ 50 }
+                  width={ 200 }
+                  height={ 50 }
+                  text={ 'Static' }
+                  fontSize={30}
+                  align={ 'center' }
+                  verticalAlign={ 'middle' }
+                  onClick={ this.onStaticClick.bind(this) }
                 />
               </Group>
               <Group>
@@ -258,22 +296,40 @@ class Canvas extends Component {
                     />
                   )
               }) }
-              { this.state.circles.map((circle, i) => {
-                  return (
-                    <Circle
-                      key={ i }
-                      id={ `circle-${i}` }
-                      name={ `circle-${i}` }
-                      physics={ circle.physics }
-                      x={ circle.x }
-                      y={ circle.y }
-                      radius={ circle.radius }
-                      points={ circle.points }
-                      stroke={ this.color(circle.type) }
-                      draggable
-                      onClick={ this.onCircleClick.bind(this, i) }
-                    />
-                  )
+              { this.state.shapes.map((shape, i) => {
+                  if (shape.type === 'rect') {
+                    return (
+                      <Rect
+                        key={ i }
+                        id={ `shape-${i}` }
+                        name={ `shape-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        width={ shape.width }
+                        height={ shape.height }
+                        stroke={ this.color(shape.mode) }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+                  if (shape.type === 'circle') {
+                    return (
+                      <Circle
+                        key={ i }
+                        id={ `shape-${i}` }
+                        name={ `shape-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        radius={ shape.radius }
+                        stroke={ this.color(shape.mode) }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
               }) }
               <Physics
                 canvas={ this }

@@ -19,7 +19,9 @@ class Transform {
     // rectangle
     let d1 = 'M280,250L280,240L380,240L380,250Z'
     // circle
-    d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
+    if (0.6 < ratio && ratio < 1.4) {
+      d1 = 'M280,250A200,200,0,1,1,680,250A200,200,0,1,1,280,250Z'
+    }
     // d1 = 'M280,250L380,250'
     if (ratio < 0.2 || 10 < ratio) {
       let last = points.length-1
