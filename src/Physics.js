@@ -5,6 +5,8 @@ import pathseg from 'pathseg'
 import { Stage, Layer, Rect, Text, Line } from 'react-konva'
 import Konva from 'konva'
 
+import Spring from './Spring'
+
 class Physics extends Component {
   constructor(props) {
     super(props)
@@ -152,11 +154,20 @@ class Physics extends Component {
     let constraint = null
     if (node.className === 'Line') {
       // TODO: need to change the attached body based on the intersected object
-      let body = this.engine.world.bodies[0]
+      let body = this.engine.world.bodies[0] // TODO
       constraint = Matter.Constraint.create({
         pointA: { x: points[0], y: points[1] },
-        bodyB: body
+        bodyB: body,
       })
+      // spring
+      /*
+      let position = { x: body.position.x, y: body.position.y }
+      constraint = Matter.Constraint.create({
+        pointA: position,
+        bodyB: body,
+        stiffness: 0.05 // spring
+      })
+      */
     }
     if (!constraint) return false
     constraint.id = id
@@ -177,6 +188,18 @@ class Physics extends Component {
         constraint.bodyB.position.x,
         constraint.bodyB.position.y,
       ]
+      node.setAttrs({ points: points })
+    } else if (node.getAttr('physics') === 'spring') {
+      this.addConstraint(node)
+      let id = node.getAttr('id')
+      let index = this.engine.world.constraints.map(c => c.id).indexOf(id)
+      let constraint = this.engine.world.constraints[index]
+
+      let start = constraint.pointA
+      let end = constraint.bodyB.position
+      let length = node.getAttr('length')
+      let spring = new Spring()
+      let points = spring.calculatePoints(start, end, length)
       node.setAttrs({ points: points })
     } else {
       this.addBody(node)

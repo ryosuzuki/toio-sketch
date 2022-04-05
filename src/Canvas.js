@@ -5,6 +5,7 @@ import _ from 'lodash'
 import pasition from 'pasition'
 import Physics from './Physics'
 import Transform from './Transform'
+import Spring from './Spring'
 
 window.Konva = Konva
 let debug = false
@@ -24,6 +25,15 @@ class Canvas extends Component {
       toios: [],
       menuPos: { x: -100, y: -100 }
     }
+
+    this.positions = [
+      { x: 400, y: 400 },
+      { x: 280, y: 380 },
+      { x: 380, y: 280 },
+      { x: 140, y: 340 },
+      { x: 340, y: 140 },
+      { x: 240, y: 240 },
+    ]
   }
 
   componentDidMount() {
@@ -132,6 +142,19 @@ class Canvas extends Component {
         type: 'line',
         physics: 'constraint'
       }
+      // spring
+
+      /*
+      shape = {
+        x: 0,
+        y: 0,
+        start: { x: points[0], y: points[1] },
+        end: { x: points[last-1], y: points[last] },
+        length: 0, // Math.sqrt((points[last-1]-points[0])**2 + (points[last]-points[1])**2),
+        type: 'spring',
+        physics: 'spring'
+      }
+      */
     }
     shape.mode = this.state.mode
     return shape
@@ -287,6 +310,7 @@ class Canvas extends Component {
                   )
                 }) }
               </Group>
+              {/* Toio */}
               { this.state.toios.map((toio, i) => {
                 return (
                   <Rect
@@ -304,15 +328,13 @@ class Canvas extends Component {
                     strokeWidth={ App.strokeWidth }
                     stroke={ App.toioStrokeColor }
                     fill={ App.toioFillColorAlpha }
+                    rotation={ 45 }
                     draggable
                     onClick={ this.onShapeClick.bind(this, i) }
                     onTap={ this.onShapeClick.bind(this, i) }
                   />
-
                 )
               })}
-
-
               {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
                   if (shape.type === 'rect') {
@@ -374,7 +396,141 @@ class Canvas extends Component {
                       />
                     )
                   }
+                  if (shape.type === 'spring') {
+                    return (
+                      <Spring
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        length={ shape.length }
+                        start={ shape.start }
+                        end={ shape.end }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.strokeColor }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
               }) }
+
+
+
+              <Rect
+                x={ 300 }
+                y={ 300 }
+                width={ App.toioSize }
+                height={ App.toioSize * 2 }
+                offsetX={ App.toioSize/2 }
+                offsetY={ App.toioSize/2 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.toioStrokeColor }
+                fill={ App.toioFillColorAlpha }
+                draggable
+              />
+              <Rect
+                x={ 300 }
+                y={ 300 }
+                width={ App.toioSize }
+                height={ App.toioSize * 2 }
+                offsetX={ App.toioSize/2 }
+                offsetY={ App.toioSize/2 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.toioStrokeColor }
+                fill={ App.toioFillColorAlpha }
+                draggable
+              />
+
+              {/*
+              // pong
+              <Rect
+                x={ 500 }
+                y={ 150 }
+                width={ 800 }
+                height={ 50 }
+                offsetX={ 800/2 }
+                offsetY={ 100/2 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.strokeColor }
+                fill={ App.fillColorAlpha }
+                draggable
+              />
+              <Rect
+                x={ 500 }
+                y={ 1024 - 150 }
+                width={ 800 }
+                height={ 50 }
+                offsetX={ 800/2 }
+                offsetY={ 100/2 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.strokeColor }
+                fill={ App.fillColorAlpha }
+                draggable
+              />
+              <Circle
+                x={ 100 }
+                y={ 100 }
+                radius={ 50 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.strokeColor }
+                fill={ App.fillColorAlpha }
+                draggable
+              />
+              <Circle
+                x={ 100 }
+                y={ 100 }
+                radius={ 50 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.toioStrokeColor }
+                fill={ App.toioFillColorAlpha }
+                draggable
+              />
+              */}
+
+              {/*
+              // teaser figure
+              <Rect
+                x={ 300 }
+                y={ 300 }
+                width={ App.toioSize }
+                height={ App.toioSize }
+                offsetX={ App.toioSize/2 }
+                offsetY={ App.toioSize/2 }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.toioStrokeColor }
+                fill={ App.toioFillColorAlpha }
+                rotation={ 45 }
+                draggable
+              />
+              */}
+              {/*
+              <Spring
+                x={ 0 }
+                y={ 0 }
+                length={ 0 }
+                start={ { x: 300, y: 700 } }
+                end={ { x: 300, y: 700 } }
+                strokeWidth={ App.strokeWidth }
+                stroke={ App.strokeColor }
+              />
+              { this.positions.map((pos, i) => {
+                return (
+                  <Circle
+                    x={ 1024- pos.x }
+                    y={ pos.y }
+                    radius={ 40 }
+                    strokeWidth={ App.strokeWidth }
+                    stroke={ App.strokeColor }
+                    fill={ App.fillColorAlpha }
+                    draggable
+                  />
+                )
+              })}
+              */}
               <Physics
                 canvas={ this }
               />
