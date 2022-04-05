@@ -21,6 +21,7 @@ class Canvas extends Component {
       currentPaths: [],
       currentId: -1,
       event: {},
+      toios: [],
       menuPos: { x: -100, y: -100 }
     }
   }
@@ -89,6 +90,11 @@ class Canvas extends Component {
     if (!this.state.isPaint) return false
     this.setState({ isPaint: false })
     if (this.state.currentPoints.length === 0) return false
+
+    if (this.state.shapes.length === 3) {
+      this.setState({ currentPoints: [], toios: [{ x: 100, y: 100 }] })
+      return
+    }
     this.morph()
   }
 
@@ -281,6 +287,32 @@ class Canvas extends Component {
                   )
                 }) }
               </Group>
+              { this.state.toios.map((toio, i) => {
+                return (
+                  <Rect
+                    key={ i }
+                    id={ `toio-${i}` }
+                    name={ `toio-${i}` }
+                    physics={ 'float' }
+                    x={ toio.x }
+                    y={ toio.y }
+                    radius={ App.toioSize }
+                    width={ App.toioSize }
+                    height={ App.toioSize }
+                    offsetX={ App.toioSize/2 }
+                    offsetY={ App.toioSize/2 }
+                    strokeWidth={ App.strokeWidth }
+                    stroke={ App.toioStrokeColor }
+                    fill={ App.toioFillColorAlpha }
+                    draggable
+                    onClick={ this.onShapeClick.bind(this, i) }
+                    onTap={ this.onShapeClick.bind(this, i) }
+                  />
+
+                )
+              })}
+
+
               {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
                   if (shape.type === 'rect') {

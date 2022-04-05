@@ -24,6 +24,11 @@ class App extends Component {
     this.fillColor = '#004842'
     this.fillColorAlpha = 'rgba(0, 28, 26, 0.4)'
     this.strokeWidth = 8
+
+    this.toioSize = 60
+    this.toioStrokeColor = '#564100'
+    this.toioFillColor = '#896700'
+    this.toioFillColorAlpha = 'rgba(54, 40, 0, 0.3)'
   }
 
   componentDidMount() {
