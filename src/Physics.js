@@ -164,6 +164,7 @@ class Physics extends Component {
       */
 
       // Piston
+      /*
       if (id === 0) {
         let body = this.engine.world.bodies[id] // TODO
         constraint = Matter.Constraint.create({
@@ -177,6 +178,34 @@ class Physics extends Component {
         constraint = Matter.Constraint.create({
           pointA: bodyA.position,
           bodyB: bodyB,
+        })
+      }
+      */
+
+      // In-situ Actuated TUI
+      if (id === 0) {
+        let bodyA = this.engine.world.bodies[1]
+        let bodyB = this.engine.world.bodies[0]
+        constraint = Matter.Constraint.create({
+          pointA: bodyA.position,
+          bodyB: bodyB,
+        })
+      }
+      if (id === 1) {
+        let bodyA = this.engine.world.bodies[1]
+        let bodyB = this.engine.world.bodies[2]
+        constraint = Matter.Constraint.create({
+          pointA: bodyA.position,
+          bodyB: bodyB,
+        })
+      }
+
+      if (id === 2) {
+        let bodyB = this.engine.world.bodies[3]
+        constraint = Matter.Constraint.create({
+          pointA: { x: 100, y: 800 },
+          bodyB: bodyB,
+          stiffness: 0.0001 // spring
         })
       }
 
