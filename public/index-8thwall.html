@@ -26,7 +26,6 @@
             window.calibratedPoints.push(point)
             if (window.calibratedPoints.length === 1) {
               let center = window.calibratedPoints[0]
-              center.y = center.y - 0.01
               let canvasEl = document.querySelector('#drawing-plane')
               canvasEl.setAttribute('position', center)
             }
@@ -41,7 +40,7 @@
               canvasEl.setAttribute('height', size)
               let base = new THREE.Vector3(-5, 0, -5)
               let angle = base.angleTo(vec) * (180 / Math.PI)
-              canvasEl.setAttribute('rotation', `-90 0 ${angle}`)
+              canvasEl.setAttribute('rotation', `-90 0 ${-angle}`)
               ground.remove()
               spheres.map((sphere) => { sphere.remove() })
               window.calibrated = true

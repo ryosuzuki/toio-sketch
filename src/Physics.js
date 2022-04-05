@@ -154,7 +154,8 @@ class Physics extends Component {
     let constraint = null
     if (node.className === 'Line') {
       // TODO: need to change the attached body based on the intersected object
-      let body = this.engine.world.bodies[0] // TODO
+      let id = Number(node.id().split('-')[1])
+      let body = this.engine.world.bodies[id] // TODO
       constraint = Matter.Constraint.create({
         pointA: { x: points[0], y: points[1] },
         bodyB: body,

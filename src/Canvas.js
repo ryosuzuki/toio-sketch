@@ -25,15 +25,6 @@ class Canvas extends Component {
       toios: [],
       menuPos: { x: -100, y: -100 }
     }
-
-    this.positions = [
-      { x: 400, y: 400 },
-      { x: 280, y: 380 },
-      { x: 380, y: 280 },
-      { x: 140, y: 340 },
-      { x: 340, y: 140 },
-      { x: 240, y: 240 },
-    ]
   }
 
   componentDidMount() {
@@ -101,10 +92,12 @@ class Canvas extends Component {
     this.setState({ isPaint: false })
     if (this.state.currentPoints.length === 0) return false
 
+    /*
     if (this.state.shapes.length === 3) {
       this.setState({ currentPoints: [], toios: [{ x: 100, y: 100 }] })
       return
     }
+    */
     this.morph()
   }
 
@@ -143,7 +136,6 @@ class Canvas extends Component {
         physics: 'constraint'
       }
       // spring
-
       /*
       shape = {
         x: 0,
@@ -418,119 +410,6 @@ class Canvas extends Component {
                   }
               }) }
 
-
-
-              <Rect
-                x={ 300 }
-                y={ 300 }
-                width={ App.toioSize }
-                height={ App.toioSize * 2 }
-                offsetX={ App.toioSize/2 }
-                offsetY={ App.toioSize/2 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.toioStrokeColor }
-                fill={ App.toioFillColorAlpha }
-                draggable
-              />
-              <Rect
-                x={ 300 }
-                y={ 300 }
-                width={ App.toioSize }
-                height={ App.toioSize * 2 }
-                offsetX={ App.toioSize/2 }
-                offsetY={ App.toioSize/2 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.toioStrokeColor }
-                fill={ App.toioFillColorAlpha }
-                draggable
-              />
-
-              {/*
-              // pong
-              <Rect
-                x={ 500 }
-                y={ 150 }
-                width={ 800 }
-                height={ 50 }
-                offsetX={ 800/2 }
-                offsetY={ 100/2 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.strokeColor }
-                fill={ App.fillColorAlpha }
-                draggable
-              />
-              <Rect
-                x={ 500 }
-                y={ 1024 - 150 }
-                width={ 800 }
-                height={ 50 }
-                offsetX={ 800/2 }
-                offsetY={ 100/2 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.strokeColor }
-                fill={ App.fillColorAlpha }
-                draggable
-              />
-              <Circle
-                x={ 100 }
-                y={ 100 }
-                radius={ 50 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.strokeColor }
-                fill={ App.fillColorAlpha }
-                draggable
-              />
-              <Circle
-                x={ 100 }
-                y={ 100 }
-                radius={ 50 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.toioStrokeColor }
-                fill={ App.toioFillColorAlpha }
-                draggable
-              />
-              */}
-
-              {/*
-              // teaser figure
-              <Rect
-                x={ 300 }
-                y={ 300 }
-                width={ App.toioSize }
-                height={ App.toioSize }
-                offsetX={ App.toioSize/2 }
-                offsetY={ App.toioSize/2 }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.toioStrokeColor }
-                fill={ App.toioFillColorAlpha }
-                rotation={ 45 }
-                draggable
-              />
-              */}
-              {/*
-              <Spring
-                x={ 0 }
-                y={ 0 }
-                length={ 0 }
-                start={ { x: 300, y: 700 } }
-                end={ { x: 300, y: 700 } }
-                strokeWidth={ App.strokeWidth }
-                stroke={ App.strokeColor }
-              />
-              { this.positions.map((pos, i) => {
-                return (
-                  <Circle
-                    x={ 1024- pos.x }
-                    y={ pos.y }
-                    radius={ 40 }
-                    strokeWidth={ App.strokeWidth }
-                    stroke={ App.strokeColor }
-                    fill={ App.fillColorAlpha }
-                    draggable
-                  />
-                )
-              })}
-              */}
               <Physics
                 canvas={ this }
               />
