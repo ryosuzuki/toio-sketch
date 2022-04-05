@@ -66,6 +66,7 @@ class Physics extends Component {
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
 
     // this.showBox()
+    // this.showChain()
 
     setInterval(() => {
       this.setState({ step: this.state.step + 1 })
@@ -95,6 +96,30 @@ class Physics extends Component {
       this.mouse.sourceEvents.mouseup = event
       this.mouse.button = -1
     }
+  }
+
+  showChain() {
+    let group = Matter.Body.nextGroup(true)
+    this.rope = Matter.Composites.stack(100, 50, 9, 1, 10, 10, (x, y) => {
+      let body = Matter.Bodies.rectangle(x, y, 100, 40, { collisionFilter: { group: group } })
+      return body
+    })
+
+    this.rope = Matter.Composites.stack(100, 50, 20, 1, 10, 10, (x, y) => {
+      return Matter.Bodies.circle(x, y, 20, { collisionFilter: { group: group } });
+    });
+
+    Matter.Composites.chain(this.rope, 0.5, 0, -0.5, 0, { stiffness: 0.2, length: 2, render: { type: 'line' } })
+    Matter.Composite.add(this.engine.world, [
+      this.rope,
+    ])
+    Matter.Composite.add(this.rope, Matter.Constraint.create({
+      bodyB: this.rope.bodies[0],
+      pointB: { x: -25, y: 0 },
+      pointA: { x: this.rope.bodies[0].position.x, y: this.rope.bodies[0].position.y },
+      stiffness: 0.5
+    }))
+
   }
 
   showBox() {
@@ -155,13 +180,11 @@ class Physics extends Component {
     if (node.className === 'Line') {
       // TODO: need to change the attached body based on the intersected object
       let id = Number(node.id().split('-')[1])
-      /*
       let body = this.engine.world.bodies[id] // TODO
       constraint = Matter.Constraint.create({
         pointA: { x: points[0], y: points[1] },
         bodyB: body,
       })
-      */
 
       // Piston
       /*
@@ -183,6 +206,7 @@ class Physics extends Component {
       */
 
       // In-situ Actuated TUI
+      /*
       if (id === 0) {
         let bodyA = this.engine.world.bodies[1]
         let bodyB = this.engine.world.bodies[0]
@@ -208,7 +232,7 @@ class Physics extends Component {
           stiffness: 0.0001 // spring
         })
       }
-
+      */
 
       // spring
       /*
@@ -280,9 +304,46 @@ class Physics extends Component {
 
   afterUpdate() {
     for (let node of this.canvas.layer.children) {
+      /*
+      // rope
+      let id = node.getAttr('id')
+      if (id.includes('rope')) {
+        let points = []
+        for (let body of this.rope.bodies) {
+          points.push(body.position.x)
+          points.push(body.position.y)
+        }
+        node.setAttrs({ points: points })
+        // node.rotate(body.angle )
+      }
+      if (id.includes('circle-0')) {
+        let body = this.rope.bodies[0]
+        node.setAttrs({
+          x: body.position.x,
+          y: body.position.y,
+          radius: 30,
+          width: 100,
+          height: 40,
+          rotation: body.angle * 180 / Math.PI
+        })
+      }
+      if (id.includes('circle-1')) {
+        let body = this.rope.bodies[19]
+        node.setAttrs({
+          x: body.position.x,
+          y: body.position.y,
+          radius: 30,
+          width: 100,
+          height: 40,
+          rotation: body.angle * 180 / Math.PI
+        })
+      }
+      */
       if (!node.getAttr('physics')) continue
       this.applyPhysics(node)
     }
+
+
   }
 
   render() {

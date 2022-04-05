@@ -410,6 +410,9 @@ class Canvas extends Component {
                   }
               }) }
 
+
+
+
               <Physics
                 canvas={ this }
               />
