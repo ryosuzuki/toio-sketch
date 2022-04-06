@@ -11,11 +11,8 @@ class Spring extends Component {
   componentDidMount() {
   }
 
-  calculatePoints() {
+  calculatePoints(start, end, length) {
     // https://github.com/liabru/matter-js/blob/master/src/render/Render.js#L661-L680
-    let start = this.props.start
-    let end = this.props.end
-    let length = this.props.length
 
     let points = []
     points.push(start.x)
@@ -48,7 +45,7 @@ class Spring extends Component {
           x={ this.props.x }
           y={ this.props.y }
           length={ this.props.length }
-          points={ this.calculatePoints() }
+          points={ this.calculatePoints(this.props.start,this.props.end,this.props.length) }
           strokeWidth={ this.props.strokeWidth }
           stroke={ this.props.stroke }
           draggable

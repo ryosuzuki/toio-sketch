@@ -127,17 +127,28 @@ class Canvas extends Component {
     let start = { x: points[0], y: points[1] }
     let end = { x: points[last-1], y: points[last] }
     let dist = Math.sqrt((end.x - start.x)**2 + (end.y - start.y)**2)
-    if (dist > bb.width || dist > bb.height) {
-      shape = {
-        x: 0,
-        y: 0,
-        points: [points[0], points[1], points[last-1], points[last]],
-        type: 'line',
-        physics: 'constraint'
+    if (dist > bb.width || dist > bb.height) 
+    {
+      let sketchPointDist =0
+      for(let i=0;i<last-3;i++){
+        sketchPointDist = sketchPointDist + Math.sqrt((points[i+2] - points[i])**2 + (points[i+3] - points[i+1])**2)
       }
-      // spring
-      /*
-      shape = {
+      if(sketchPointDist < 2.5*dist) // draw line quickly & straight to ensure correct recognition 
+      {
+        shape = 
+        {
+          x: 0,
+          y: 0,
+          points: [points[0], points[1], points[last-1], points[last]],
+          type: 'line',
+          physics: 'constraint'
+        }
+      }
+      else // draw spring slowly and with edges to ensure correct recognition
+      {
+        // spring 
+        shape = 
+        {
         x: 0,
         y: 0,
         start: { x: points[0], y: points[1] },
@@ -145,8 +156,8 @@ class Canvas extends Component {
         length: 0, // Math.sqrt((points[last-1]-points[0])**2 + (points[last]-points[1])**2),
         type: 'spring',
         physics: 'spring'
+        }
       }
-      */
     }
     shape.mode = this.state.mode
     return shape

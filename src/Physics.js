@@ -169,7 +169,7 @@ class Physics extends Component {
     this.setState({ bodyIds: bodyIds })
   }
 
-  addConstraint(node) {
+  addConstraint(node) {  //  to attach a body draw the body before drawing constraint
     let id = node.getAttr('id')
     let constraintIds = this.state.constraintIds
     if (constraintIds.includes(id)) {
@@ -177,13 +177,36 @@ class Physics extends Component {
     }
     let points = node.getAttr('points')
     let constraint = null
-    if (node.className === 'Line') {
+
+    let startPoint={x:points[0], y:points[1]}
+    let endPoint = {x:points[points.length-2], y:points[points.length-1]}
+    // console.log(points.length);
+
+    // getting bodyToAttach
+    let shapeType = node.id().split('-')[0]
+    let shapeId = Number(node.id().split('-')[1])
+    let bodyToAttach = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
+
+    this.engine.world.bodies.forEach(element => {
+      // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
+      if(element.bounds.max.x > endPoint.x && element.bounds.min.x < endPoint.x && element.bounds.max.y > endPoint.y && element.bounds.min.y < endPoint.y )
+      {
+        bodyToAttach = element
+      }
+    });
+    Matter.Body.setPosition(bodyToAttach,{x:endPoint.x, y:endPoint.y}) // Body snaps to the constraint
+
+
+
+
+
+
+    if ( shapeType === 'line') {
       // TODO: need to change the attached body based on the intersected object
-      let id = Number(node.id().split('-')[1])
-      let body = this.engine.world.bodies[id] // TODO
+       
       constraint = Matter.Constraint.create({
-        pointA: { x: points[0], y: points[1] },
-        bodyB: body,
+        pointA: { x: startPoint.x, y: startPoint.y },
+        bodyB: bodyToAttach,
       })
 
       // Piston
@@ -244,14 +267,28 @@ class Physics extends Component {
       })
       */
     }
+    else if(shapeType === 'spring'){
+      constraint = Matter.Constraint.create({
+        pointA: { x: startPoint.x, y: startPoint.y },
+        bodyB: bodyToAttach,
+        render:{strokeStyle: 'red'},
+        stiffness: 0.05
+      })
+    }
+
+
     if (!constraint) return false
     constraint.id = id
     Matter.Composite.add(this.engine.world, constraint)
     constraintIds.push(id)
     this.setState({ constraintIds: constraintIds })
+
   }
 
+
+
   applyPhysics(node) {
+    // console.log(node.getAttr('id'))
     if (node.getAttr('physics') === 'constraint') {
       this.addConstraint(node)
       let id = node.getAttr('id')
@@ -274,6 +311,9 @@ class Physics extends Component {
       let end = constraint.bodyB.position
       let length = node.getAttr('length')
       let spring = new Spring()
+
+      console.log(end);
+
       let points = spring.calculatePoints(start, end, length)
       node.setAttrs({ points: points })
     } else {
