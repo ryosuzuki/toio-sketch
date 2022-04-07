@@ -33,10 +33,12 @@ class Canvas extends Component {
     this.newtonsCradle = this.newtonsCradle.bind(this)
     this.rubeGoldberg = this.rubeGoldberg.bind(this)
     this.pistonMech = this.pistonMech.bind(this)
+    this.pinBall = this.pinBall.bind(this)
     // this.slingShot() // uncomment line 49 in Physics.js
     // this.newtonsCradle()
     // this.rubeGoldberg()
     // this.pistonMech()
+    // this.pinBall()
     
   }
 
@@ -473,8 +475,43 @@ class Canvas extends Component {
     shape7.mode = this.state.mode
     this.state.shapes.push(shape7)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
+  }
 
+  pinBall(){
+  let xx = [510,      100,  1024-100,  330,                 700,              500, 700, 350]
+  let yy = [125,      550,  550,       850,                 850,              600, 430, 300]
+  let ww = [1024-150,  50,   50,        App.toioSize * 4,   App.toioSize * 4, 300, 300, 300]
+  let hh = [ 50,       800,  800,      App.toioSize,        App.toioSize,      30, 30,   30]
+  let rr = [ 0,        0,    0,        -10,                  10,                -5,   +5,   -5]
+  let pp = [ 'static', 'static', 'static', 'float', 'float', 'static', 'static', 'static']
 
+  for(let i=0;i<xx.length;i++)
+  {
+    let shape1 = {
+      x: xx[i],
+      y: yy[i],
+      width: ww[i],
+      height: hh[i],
+      rotation: rr[i],
+      type: 'rect',
+      physics: pp[i]
+    }
+    shape1.mode = this.state.mode
+    this.state.shapes.push(shape1)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+  }
+
+  let shape2 = {
+    x: 500,
+    y: 500,
+    radius: 50,
+    type: 'circle',
+    physics: 'dynamic'
+  }
+  shape2.mode = this.state.mode
+  this.state.shapes.push(shape2)
+  this.setState({ currentPaths: [], shapes: this.state.shapes })
+  
   }
 
   render() {

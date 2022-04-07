@@ -23,14 +23,14 @@ Replace `index.html` with `index-8thwall.html` when using iPad or Android. When 
 ## Physics enabled Demos
 To run examples uncomment function calls in Canvas.js componentDidMount()
 
-## Demos Completed
+## Demos Completed (without Toio)
 - Slingshot
 - Newton's Cradle
 - Rube Goldeberg's Machine
 - Piston Mechanism
+- Pinball
 
 ## Demos Remaining
-- Pinball
 - Pong
 - In Situ Actuated TUI
 - Rope Control
