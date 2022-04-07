@@ -29,6 +29,13 @@ class Canvas extends Component {
 
   componentDidMount() {
     this.stage = Konva.stages[0]
+    this.slingShot = this.slingShot.bind(this)
+    this.newtonsCradle = this.newtonsCradle.bind(this)
+    this.rubeGoldberg = this.rubeGoldberg.bind(this)
+    // this.slingShot() // uncomment line 49 in Physics.js
+    // this.newtonsCradle()
+    // this.rubeGoldberg()
+    
   }
 
   mouseDown(pos) {
@@ -240,6 +247,150 @@ class Canvas extends Component {
     console.log('up')
   }
 
+  slingShot(){
+    // uncomment line 49 in Physics.js ----->  to make gravity 0
+    let shape1 = {
+      x: 300,
+      y: 900,
+      radius: 40,
+      type: 'circle',
+      physics: 'dynamic'
+    }
+    shape1.mode = this.state.mode
+    this.state.shapes.push(shape1)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape2 = 
+    {
+      x: 0,
+      y: 0,
+      start: { x: 300, y: 700 },
+      end: { x: 300, y: 900 },
+      length: 0, // Math.sqrt((points[last-1]-points[0])**2 + (points[last]-points[1])**2),
+      type: 'spring',
+      physics: 'spring'
+    }
+    shape2.mode = this.state.mode
+    this.state.shapes.push(shape2)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+
+    let xx = [ 700, 700, 700, 800, 900, 800 ]
+    let yy = [ 100, 200, 300, 300, 300, 200 ] 
+
+    for(let i=0;i<xx.length;i++)
+    {
+      let shape1 = {
+        x: xx[i],
+        y: yy[i],
+        radius: 40,
+        type: 'circle',
+        physics: 'dynamic'
+      }
+      shape1.mode = this.state.mode
+      this.state.shapes.push(shape1)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+    
+  }
+
+  newtonsCradle(){
+
+    let start = 360, offset = 90;
+    for(let i=0;i<=3;i++)
+    {
+      
+      let x = start + offset*i
+      let shape1 = {
+        x: x,
+        y: 700,
+        radius: 40,
+        type: 'circle',
+        physics: 'dynamic'
+      }
+      shape1.mode = this.state.mode
+      this.state.shapes.push(shape1)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+      let shape2 = 
+      {
+        x: 0,
+        y: 0,
+        points: [x, 350, x, 700],
+        type: 'line',
+        physics: 'constraint'
+      }
+      shape2.mode = this.state.mode
+      this.state.shapes.push(shape2)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+    for(let i=4;i<=5;i++) // for toios
+    {
+      let x = (i === 4) ? start - offset : start + offset * 4
+      let shape1 = {
+        x: x,
+        y: 700,
+        radius: 40,
+        type: 'circle',
+        physics: 'dynamic'
+      }
+      shape1.mode = this.state.mode
+      this.state.shapes.push(shape1) //  this.state.toios.push(shape1)
+      this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
+
+      let shape2 = 
+      {
+        x: 0,
+        y: 0,
+        points: [x, 350, x, 700],
+        type: 'line',
+        physics: 'constraint'
+      }
+      shape2.mode = this.state.mode
+      this.state.shapes.push(shape2)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+  }
+
+  rubeGoldberg(){
+    let xx = [500, 700, 300, 900]
+    let yy = [350, 800, 100, 600]
+    let ww = [600, 600,  50,  50]
+    let hh = [ 50,  50,  50,  50]
+    let rr = [ 2, -10,  5, -5]
+    let pp = [ 'static', 'static',  'dynamic', 'dynamic']
+
+    for(let i=0;i<xx.length;i++)
+    {
+      let shape1 = {
+        x: xx[i],
+        y: yy[i],
+        width: ww[i],
+        height: hh[i],
+        rotation: rr[i],
+        type: 'rect',
+        physics: pp[i]
+      }
+      shape1.mode = this.state.mode
+      this.state.shapes.push(shape1)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+    let shape2 = {
+      x: 700,
+      y: 200,
+      radius: 40,
+      type: 'circle',
+      physics: 'dynamic'
+    }
+    shape2.mode = this.state.mode
+    this.state.shapes.push(shape2)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+  }
+
   render() {
     return (
       <>
@@ -356,6 +507,7 @@ class Canvas extends Component {
                         strokeWidth={ App.strokeWidth }
                         stroke={ App.strokeColor }
                         fill={ App.fillColorAlpha }
+                        rotation={ shape.rotation }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }

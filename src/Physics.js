@@ -46,6 +46,7 @@ class Physics extends Component {
       }
     })
     this.engine = engine
+    // this.engine.gravity = {x:0,y:0}  // uncomment for slingshot example
     this.runner = runner
     this.matterRender = render
 
@@ -143,7 +144,9 @@ class Physics extends Component {
     if (node.className === 'Rect') {
       let width = node.getAttr('width')
       let height = node.getAttr('height')
+      let angle = node.getAttr('rotation')
       body = Matter.Bodies.rectangle(x, y, width, height, {
+        angle: (Math.PI/180) * angle,
         render: {
           fillStyle: 'red',
           strokeStyle: 'red',
@@ -274,6 +277,17 @@ class Physics extends Component {
         render:{strokeStyle: 'red'},
         stiffness: 0.05
       })
+      let shotFlag = 0;
+      Matter.Events.on(this.engine,'afterUpdate',()=>{ // removes the bodyToAttach from the slingshot and adds a new one
+        let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
+        if (this.mouseConstraint.mouse.button ===-1 && shotFlag==0 && dist>4*bodyToAttach.circleRadius) 
+        {
+          shotFlag=1;
+          bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , {density: 0.04});
+          Matter.Composite.add(this.engine.world, bodyToAttach);
+          constraint.bodyB = bodyToAttach;
+        }
+      })
     }
 
 
@@ -311,8 +325,6 @@ class Physics extends Component {
       let end = constraint.bodyB.position
       let length = node.getAttr('length')
       let spring = new Spring()
-
-      console.log(end);
 
       let points = spring.calculatePoints(start, end, length)
       node.setAttrs({ points: points })

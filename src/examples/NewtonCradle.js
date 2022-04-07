@@ -1,3 +1,8 @@
+import React, { Component } from 'react'
+import { Stage, Layer, Rect, Text, Line, Group, Circle, Path } from 'react-konva'
+import Konva from 'konva'
+import Matter from 'matter-js'
+
 class NewtonCradle extends Component {
   constructor(props) {
     this.start = 360
@@ -73,3 +78,4 @@ class NewtonCradle extends Component {
     )
   }
 }
+export default NewtonCradle;

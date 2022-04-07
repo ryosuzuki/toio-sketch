@@ -20,13 +20,17 @@ For example, `https://10.0.1.2:3000/toio-sketch` with your iPad or Android devic
 Replace `index.html` with `index-8thwall.html` when using iPad or Android. When developing and debugging with the desktop machine, replace `index.html` with `index-desktop.html`
 
 
-## Instructions to test
-For Toio to follow virtaul bodies - uncomment lines marked 'uncomment for toio'
+## Physics enabled Demos
+To run examples uncomment function calls in Canvas.js componentDidMount()
 
-## Features
-Mode - Sketch & Action  
-Objects - Pendulum, Spring & Slingshot  
+## Demos Completed
+- Slingshot
+- Newton's Cradel
+- Rube Goldeberg's Machine
 
-## To Do
-Check working with toio  
-Finalize interaction to switch modes & objects  
+## Demos Remaining
+- Piston
+- Pinball
+- Pong
+- In Situ Actuated TUI
+- Rope Control
