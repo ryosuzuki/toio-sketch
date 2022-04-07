@@ -25,11 +25,11 @@ To run examples uncomment function calls in Canvas.js componentDidMount()
 
 ## Demos Completed
 - Slingshot
-- Newton's Cradel
+- Newton's Cradle
 - Rube Goldeberg's Machine
+- Piston Mechanism
 
 ## Demos Remaining
-- Piston
 - Pinball
 - Pong
 - In Situ Actuated TUI

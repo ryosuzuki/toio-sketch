@@ -32,9 +32,11 @@ class Canvas extends Component {
     this.slingShot = this.slingShot.bind(this)
     this.newtonsCradle = this.newtonsCradle.bind(this)
     this.rubeGoldberg = this.rubeGoldberg.bind(this)
+    this.pistonMech = this.pistonMech.bind(this)
     // this.slingShot() // uncomment line 49 in Physics.js
     // this.newtonsCradle()
     // this.rubeGoldberg()
+    // this.pistonMech()
     
   }
 
@@ -249,7 +251,7 @@ class Canvas extends Component {
 
   slingShot(){
     // uncomment line 49 in Physics.js ----->  to make gravity 0
-    let shape1 = {
+    let shape1 = {  // for toio
       x: 300,
       y: 900,
       radius: 40,
@@ -257,8 +259,8 @@ class Canvas extends Component {
       physics: 'dynamic'
     }
     shape1.mode = this.state.mode
-    this.state.shapes.push(shape1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
+    this.state.shapes.push(shape1) // this.state.toios.push(shape1)
+    this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
 
     let shape2 = 
     {
@@ -278,7 +280,7 @@ class Canvas extends Component {
     let xx = [ 700, 700, 700, 800, 900, 800 ]
     let yy = [ 100, 200, 300, 300, 300, 200 ] 
 
-    for(let i=0;i<xx.length;i++)
+    for(let i=0;i<xx.length;i++) // pile of circles
     {
       let shape1 = {
         x: xx[i],
@@ -388,6 +390,90 @@ class Canvas extends Component {
     shape2.mode = this.state.mode
     this.state.shapes.push(shape2)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+  }
+
+  pistonMech(){
+    let shape1 = {
+      x: 240,
+      y: 300,
+      radius: 40,
+      type: 'circle',
+      physics: 'float'
+    }
+    shape1.mode = this.state.mode
+    this.state.shapes.push(shape1)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape2 = {
+      x: 240,
+      y: 512,
+      radius: 160,
+      type: 'circle',
+      physics: 'static'
+    }
+    shape2.mode = this.state.mode
+    this.state.shapes.push(shape2)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape4 = { // for toio
+      x: 600,
+      y: 512,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic'
+    }
+    shape4.mode = this.state.mode
+    this.state.shapes.push(shape4)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape5 = {
+      x: 700,
+      y: 512-55,
+      width: 400,
+      height: 50,
+      type: 'rect',
+      physics: 'static'
+    }
+    shape5.mode = this.state.mode
+    this.state.shapes.push(shape5)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape6 = {
+      x: 700,
+      y: 512+55,
+      width: 400,
+      height: 50,
+      type: 'rect',
+      physics: 'static'
+    }
+    shape6.mode = this.state.mode
+    this.state.shapes.push(shape6)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape3 = {
+      x: 0,
+      y: 0,
+      points: [240, 512, 240, 300],
+      type: 'line',
+      physics: 'constraint'
+    }
+    shape3.mode = this.state.mode
+    this.state.shapes.push(shape3)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape7 = {
+      x: 0,
+      y: 0,
+      points: [240, 300, 600, 512],
+      type: 'linetwo',
+      physics: 'constrainttwo'
+    }
+    shape7.mode = this.state.mode
+    this.state.shapes.push(shape7)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
 
   }
 
@@ -534,6 +620,24 @@ class Canvas extends Component {
                     )
                   }
                   if (shape.type === 'line') {
+                    return (
+                      <Line
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        points={ shape.points }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.strokeColor }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+                  if (shape.type === 'linetwo') { // contraint between two bodies
                     return (
                       <Line
                         key={ i }

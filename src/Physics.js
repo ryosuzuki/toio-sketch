@@ -270,6 +270,27 @@ class Physics extends Component {
       })
       */
     }
+    if ( shapeType === 'linetwo') {
+       
+      // adding nearest body to start point
+
+      let bodyToAttach2 = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
+
+      this.engine.world.bodies.forEach(element => {
+        // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
+        if(element.bounds.max.x > startPoint.x && element.bounds.min.x < startPoint.x && element.bounds.max.y > startPoint.y && element.bounds.min.y < startPoint.y )
+        {
+          bodyToAttach2 = element
+        }
+      });
+      Matter.Body.setPosition(bodyToAttach2,{x:startPoint.x, y:startPoint.y}) // Body snaps to the constraint
+
+      constraint = Matter.Constraint.create({
+        bodyA: bodyToAttach2,
+        bodyB: bodyToAttach,
+      })
+
+    }
     else if(shapeType === 'spring'){
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
@@ -311,6 +332,18 @@ class Physics extends Component {
       let points = [
         constraint.pointA.x,
         constraint.pointA.y,
+        constraint.bodyB.position.x,
+        constraint.bodyB.position.y,
+      ]
+      node.setAttrs({ points: points })
+    } else if(node.getAttr('physics') === 'constrainttwo') { // constraint between two bodies
+      this.addConstraint(node)
+      let id = node.getAttr('id')
+      let index = this.engine.world.constraints.map(c => c.id).indexOf(id)
+      let constraint = this.engine.world.constraints[index]
+      let points = [
+        constraint.bodyA.position.x,
+        constraint.bodyA.position.y,
         constraint.bodyB.position.x,
         constraint.bodyB.position.y,
       ]
