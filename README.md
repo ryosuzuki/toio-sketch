@@ -29,8 +29,8 @@ To run examples uncomment function calls in Canvas.js componentDidMount()
 - Rube Goldeberg's Machine
 - Piston Mechanism
 - Pinball
-
-## Demos Remaining
 - Pong
 - In Situ Actuated TUI
+
+## Demos Remaining
 - Rope Control

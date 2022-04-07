@@ -34,11 +34,15 @@ class Canvas extends Component {
     this.rubeGoldberg = this.rubeGoldberg.bind(this)
     this.pistonMech = this.pistonMech.bind(this)
     this.pinBall = this.pinBall.bind(this)
-    // this.slingShot() // uncomment line 49 in Physics.js
+    this.pong = this.pong.bind(this)
+    this.inSituTui = this.inSituTui.bind(this)
+    // this.slingShot() //  disable gravity ----------uncomment line 49 in Physics.js
     // this.newtonsCradle()
     // this.rubeGoldberg()
     // this.pistonMech()
     // this.pinBall()
+    // this.pong() //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.inSituTui()
     
   }
 
@@ -252,7 +256,7 @@ class Canvas extends Component {
   }
 
   slingShot(){
-    // uncomment line 49 in Physics.js ----->  to make gravity 0
+    // disable gravity ----------uncomment line 49 in Physics.js
     let shape1 = {  // for toio
       x: 300,
       y: 900,
@@ -514,6 +518,140 @@ class Canvas extends Component {
   
   }
 
+  pong(){ 
+    //  disable gravity ----------uncomment line 49 in Physics.js
+    let shape1 = { // wall
+      x: 500,
+      y: 150,
+      width: 800,
+      height: 50,
+      type: 'rect',
+      physics: 'static'
+    }
+    shape1.mode = this.state.mode
+    this.state.shapes.push(shape1)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape2 = { // wall
+      x: 500,
+      y: 1024-150,
+      width: 800,
+      height: 50,
+      type: 'rect',
+      physics: 'static'
+    }
+    shape2.mode = this.state.mode
+    this.state.shapes.push(shape2)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape3 = { // virtual ball
+      x: 400,
+      y: 400,
+      radius: 50,
+      type: 'circle',
+      physics: 'dynamic'
+    }
+    shape3.mode = this.state.mode
+    this.state.shapes.push(shape3)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape4 = { // toio ball
+      x: 600,
+      y: 600,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynamic'
+    }
+    shape4.mode = this.state.mode
+    this.state.shapes.push(shape4)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape5 = { // paddle R
+      x: 900,
+      y: 650,
+      width: App.toioSize,
+      height: App.toioSize*4,
+      type: 'rect',
+      physics: 'float'
+    }
+    shape5.mode = this.state.mode
+    this.state.shapes.push(shape5)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape6 = { // paddle L
+      x: 100,
+      y: 400,
+      width: App.toioSize,
+      height: App.toioSize*4,
+      type: 'rect',
+      physics: 'float'
+    }
+    shape6.mode = this.state.mode
+    this.state.shapes.push(shape6)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+  }
+
+
+  inSituTui(){
+    //  disable gravity ----------uncomment line 49 in Physics.js
+    let xx = [400, 500, 600]
+    let yy = [400, 300, 400]
+    let pp = ["static", "static", "dynamic"]
+
+    for(let i =0;i<xx.length;i++){
+      let shape5 = { // for toio
+        x: xx[i],
+        y: yy[i],
+        width: App.toioSize,
+        height: App.toioSize,
+        type: 'rect',
+        physics: pp[i]
+      }
+      shape5.mode = this.state.mode
+      this.state.shapes.push(shape5)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+    for(let i=0;i<xx.length-1;i++){
+      let shape7 = {
+        x: 0,
+        y: 0,
+        points: [xx[i], yy[i], xx[i+1], yy[i+1]],
+        type: 'linetwo',
+        physics: 'constrainttwo'
+      }
+      shape7.mode = this.state.mode
+      this.state.shapes.push(shape7)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+    let shape5 = { // for toio
+      x: 200,
+      y: 800,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'float'
+    }
+    shape5.mode = this.state.mode
+    this.state.shapes.push(shape5)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    let shape7 = {
+      x: 0,
+      y: 0,
+      points: [100, 800, 200, 800],
+      type: 'lineelastic',
+      physics: 'constraint'
+    }
+    shape7.mode = this.state.mode
+    this.state.shapes.push(shape7)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+  }
+
+
   render() {
     return (
       <>
@@ -675,6 +813,24 @@ class Canvas extends Component {
                     )
                   }
                   if (shape.type === 'linetwo') { // contraint between two bodies
+                    return (
+                      <Line
+                        key={ i }
+                        id={ `${shape.type}-${i}` }
+                        name={ `${shape.type}-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        points={ shape.points }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.strokeColor }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
+                  if (shape.type === 'lineelastic') { // super elastoc constraint for InSitu TUI
                     return (
                       <Line
                         key={ i }
