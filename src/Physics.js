@@ -46,7 +46,7 @@ class Physics extends Component {
       }
     })
     this.engine = engine
-    // this.engine.gravity = {x:0,y:0}  // uncomment for slingshot, pong, insituTUI example
+    // this.engine.gravity = {x:0,y:0}  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
     this.runner = runner
     this.matterRender = render
 

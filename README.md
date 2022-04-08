@@ -31,6 +31,7 @@ To run examples uncomment function calls in Canvas.js componentDidMount()
 - Pinball
 - Pong
 - In Situ Actuated TUI
-
-## Demos Remaining
 - Rope Control
+
+## Todo
+- Adding Toio control to each Demo

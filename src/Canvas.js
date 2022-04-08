@@ -36,14 +36,15 @@ class Canvas extends Component {
     this.pinBall = this.pinBall.bind(this)
     this.pong = this.pong.bind(this)
     this.inSituTui = this.inSituTui.bind(this)
+    this.rope = this.rope.bind(this)
     // this.slingShot() //  disable gravity ----------uncomment line 49 in Physics.js
     // this.newtonsCradle()
     // this.rubeGoldberg()
     // this.pistonMech()
     // this.pinBall()
     // this.pong() //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.inSituTui()
-    
+    // this.inSituTui() //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.rope() //  disable gravity ----------uncomment line 49 in Physics.js
   }
 
   mouseDown(pos) {
@@ -126,7 +127,8 @@ class Canvas extends Component {
       width: bb.width,
       height: bb.height,
       type: 'rect',
-      physics: 'float'
+      physics: 'float',
+      rotation: 0
     }
     if (0.6 < ratio && ratio < 1.4) {
       let radius = Math.min(bb.width, bb.height) / 2
@@ -135,7 +137,8 @@ class Canvas extends Component {
         y: oy,
         radius: radius,
         type: 'circle',
-        physics: 'float'
+        physics: 'float',
+        visible: true
       }
     }
     let last = points.length-1
@@ -262,7 +265,8 @@ class Canvas extends Component {
       y: 900,
       radius: 40,
       type: 'circle',
-      physics: 'dynamic'
+      physics: 'dynamic',
+      visible: true
     }
     shape1.mode = this.state.mode
     this.state.shapes.push(shape1) // this.state.toios.push(shape1)
@@ -314,7 +318,8 @@ class Canvas extends Component {
         y: 700,
         radius: 40,
         type: 'circle',
-        physics: 'dynamic'
+        physics: 'dynamic',
+        visible: true
       }
       shape1.mode = this.state.mode
       this.state.shapes.push(shape1)
@@ -341,7 +346,8 @@ class Canvas extends Component {
         y: 700,
         radius: 40,
         type: 'circle',
-        physics: 'dynamic'
+        physics: 'dynamic',
+        visible: true
       }
       shape1.mode = this.state.mode
       this.state.shapes.push(shape1) //  this.state.toios.push(shape1)
@@ -391,7 +397,8 @@ class Canvas extends Component {
       y: 200,
       radius: 40,
       type: 'circle',
-      physics: 'dynamic'
+      physics: 'dynamic',
+      visible: true
     }
     shape2.mode = this.state.mode
     this.state.shapes.push(shape2)
@@ -405,7 +412,8 @@ class Canvas extends Component {
       y: 300,
       radius: 40,
       type: 'circle',
-      physics: 'float'
+      physics: 'float',
+      visible: true
     }
     shape1.mode = this.state.mode
     this.state.shapes.push(shape1)
@@ -416,7 +424,8 @@ class Canvas extends Component {
       y: 512,
       radius: 160,
       type: 'circle',
-      physics: 'static'
+      physics: 'static',
+      visible: true
     }
     shape2.mode = this.state.mode
     this.state.shapes.push(shape2)
@@ -428,7 +437,8 @@ class Canvas extends Component {
       width: App.toioSize,
       height: App.toioSize,
       type: 'rect',
-      physics: 'dynammic'
+      physics: 'dynammic',
+      rotation: 0
     }
     shape4.mode = this.state.mode
     this.state.shapes.push(shape4)
@@ -440,7 +450,8 @@ class Canvas extends Component {
       width: 400,
       height: 50,
       type: 'rect',
-      physics: 'static'
+      physics: 'static',
+      rotation: 0
     }
     shape5.mode = this.state.mode
     this.state.shapes.push(shape5)
@@ -452,7 +463,8 @@ class Canvas extends Component {
       width: 400,
       height: 50,
       type: 'rect',
-      physics: 'static'
+      physics: 'static',
+      rotation: 0
     }
     shape6.mode = this.state.mode
     this.state.shapes.push(shape6)
@@ -510,7 +522,8 @@ class Canvas extends Component {
     y: 500,
     radius: 50,
     type: 'circle',
-    physics: 'dynamic'
+    physics: 'dynamic',
+    visible: true
   }
   shape2.mode = this.state.mode
   this.state.shapes.push(shape2)
@@ -526,7 +539,8 @@ class Canvas extends Component {
       width: 800,
       height: 50,
       type: 'rect',
-      physics: 'static'
+      physics: 'static',
+      rotation: 0
     }
     shape1.mode = this.state.mode
     this.state.shapes.push(shape1)
@@ -538,7 +552,8 @@ class Canvas extends Component {
       width: 800,
       height: 50,
       type: 'rect',
-      physics: 'static'
+      physics: 'static',
+      rotation: 0
     }
     shape2.mode = this.state.mode
     this.state.shapes.push(shape2)
@@ -549,7 +564,8 @@ class Canvas extends Component {
       y: 400,
       radius: 50,
       type: 'circle',
-      physics: 'dynamic'
+      physics: 'dynamic',
+      visible: true
     }
     shape3.mode = this.state.mode
     this.state.shapes.push(shape3)
@@ -561,7 +577,8 @@ class Canvas extends Component {
       width: App.toioSize,
       height: App.toioSize,
       type: 'rect',
-      physics: 'dynamic'
+      physics: 'dynamic',
+      rotation: 0
     }
     shape4.mode = this.state.mode
     this.state.shapes.push(shape4)
@@ -573,7 +590,8 @@ class Canvas extends Component {
       width: App.toioSize,
       height: App.toioSize*4,
       type: 'rect',
-      physics: 'float'
+      physics: 'float',
+      rotation: 0
     }
     shape5.mode = this.state.mode
     this.state.shapes.push(shape5)
@@ -585,7 +603,8 @@ class Canvas extends Component {
       width: App.toioSize,
       height: App.toioSize*4,
       type: 'rect',
-      physics: 'float'
+      physics: 'float',
+      rotation: 0
     }
     shape6.mode = this.state.mode
     this.state.shapes.push(shape6)
@@ -607,7 +626,8 @@ class Canvas extends Component {
         width: App.toioSize,
         height: App.toioSize,
         type: 'rect',
-        physics: pp[i]
+        physics: pp[i],
+        rotation: 0
       }
       shape5.mode = this.state.mode
       this.state.shapes.push(shape5)
@@ -633,7 +653,8 @@ class Canvas extends Component {
       width: App.toioSize,
       height: App.toioSize,
       type: 'rect',
-      physics: 'float'
+      physics: 'float',
+      rotation: 0
     }
     shape5.mode = this.state.mode
     this.state.shapes.push(shape5)
@@ -651,6 +672,91 @@ class Canvas extends Component {
     this.setState({ currentPaths: [], shapes: this.state.shapes })
   }
 
+  rope(){
+
+    // disable gravity ----------uncomment line 49 in Physics.js
+
+    let start = 100
+    let offset = 40
+    let ropeSize = 24;
+    let pp = 'static'
+    let vv = true
+    
+    for(let i =0;i<ropeSize;i++){
+
+      if(i==0)
+      {pp = 'static'}
+      else if (i==ropeSize-1)
+      {pp = 'dynamic';vv = true}
+      else
+      {pp = 'dynamic'; vv=false}
+
+      let shape5 = { // for toio
+        x: start,
+        y: start+(offset*i),
+        radius: 20,
+        type: 'circle',
+        physics: pp,
+        visible: vv
+      }
+      shape5.mode = this.state.mode
+      this.state.shapes.push(shape5)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+    for(let i=0;i<ropeSize-1;i++){
+      let shape7 = {
+        x: 0,
+        y: 0,
+        points: [start, start+(offset*i), start, start+(offset*(i+1))],
+        type: 'linetwo',
+        physics: 'constrainttwo'
+      }
+      shape7.mode = this.state.mode
+      this.state.shapes.push(shape7)
+      this.setState({ currentPaths: [], shapes: this.state.shapes })
+    }
+
+    let shape8 = { // for toio
+      x: 200,
+      y: 700,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic',
+      rotation: 0
+    }
+    shape8.mode = this.state.mode
+    this.state.shapes.push(shape8)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    shape8 = { // for toio
+      x: 300,
+      y: 700,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic',
+      rotation: 0
+    }
+    shape8.mode = this.state.mode
+    this.state.shapes.push(shape8)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+    shape8 = { // for toio
+      x: 400,
+      y: 700,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic',
+      rotation: 0
+    }
+    shape8.mode = this.state.mode
+    this.state.shapes.push(shape8)
+    this.setState({ currentPaths: [], shapes: this.state.shapes })
+
+  }
 
   render() {
     return (
@@ -788,6 +894,7 @@ class Canvas extends Component {
                         strokeWidth={ App.strokeWidth }
                         stroke={ App.strokeColor }
                         fill={ App.fillColorAlpha }
+                        visible={ shape.visible }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }
