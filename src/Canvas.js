@@ -29,6 +29,8 @@ class Canvas extends Component {
 
   componentDidMount() {
     this.stage = Konva.stages[0]
+
+    // demos
     this.slingShot = this.slingShot.bind(this)
     this.newtonsCradle = this.newtonsCradle.bind(this)
     this.rubeGoldberg = this.rubeGoldberg.bind(this)
@@ -260,7 +262,7 @@ class Canvas extends Component {
 
   slingShot(){
     // disable gravity ----------uncomment line 49 in Physics.js
-    let shape1 = {  // for toio
+    let toio1 = {  // for toio
       x: 300,
       y: 900,
       radius: 40,
@@ -268,8 +270,8 @@ class Canvas extends Component {
       physics: 'dynamic',
       visible: true
     }
-    shape1.mode = this.state.mode
-    this.state.shapes.push(shape1) // this.state.toios.push(shape1)
+    toio1.mode = this.state.mode
+    this.state.shapes.push(toio1) // this.state.toios.push(toio1)
     this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
 
     let shape2 = 
@@ -341,7 +343,7 @@ class Canvas extends Component {
     for(let i=4;i<=5;i++) // for toios
     {
       let x = (i === 4) ? start - offset : start + offset * 4
-      let shape1 = {
+      let toio1 = {
         x: x,
         y: 700,
         radius: 40,
@@ -349,8 +351,8 @@ class Canvas extends Component {
         physics: 'dynamic',
         visible: true
       }
-      shape1.mode = this.state.mode
-      this.state.shapes.push(shape1) //  this.state.toios.push(shape1)
+      toio1.mode = this.state.mode
+      this.state.shapes.push(toio1) //  this.state.toios.push(toio1)
       this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
 
       let shape2 = 
@@ -375,6 +377,7 @@ class Canvas extends Component {
     let hh = [ 50,  50,  50,  50]
     let rr = [ 2, -10,  5, -5]
     let pp = [ 'static', 'static',  'dynamic', 'dynamic']
+    let objType = [ 'shape', 'shape',  'toio', 'toio']
 
     for(let i=0;i<xx.length;i++)
     {
@@ -407,7 +410,7 @@ class Canvas extends Component {
   }
 
   pistonMech(){
-    let shape1 = {
+    let shape1 = { //  joint
       x: 240,
       y: 300,
       radius: 40,
@@ -419,7 +422,7 @@ class Canvas extends Component {
     this.state.shapes.push(shape1)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    let shape2 = {
+    let shape2 = { // crank
       x: 240,
       y: 512,
       radius: 160,
@@ -431,7 +434,7 @@ class Canvas extends Component {
     this.state.shapes.push(shape2)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    let shape4 = { // for toio
+    let toio1 = { // for toio  // PISTON
       x: 600,
       y: 512,
       width: App.toioSize,
@@ -440,11 +443,11 @@ class Canvas extends Component {
       physics: 'dynammic',
       rotation: 0
     }
-    shape4.mode = this.state.mode
-    this.state.shapes.push(shape4)
+    toio1.mode = this.state.mode
+    this.state.shapes.push(toio1)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    let shape5 = {
+    let shape5 = { // wall
       x: 700,
       y: 512-55,
       width: 400,
@@ -457,7 +460,7 @@ class Canvas extends Component {
     this.state.shapes.push(shape5)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    let shape6 = {
+    let shape6 = { // wall
       x: 700,
       y: 512+55,
       width: 400,
@@ -500,6 +503,7 @@ class Canvas extends Component {
   let hh = [ 50,       800,  800,      App.toioSize,        App.toioSize,      30, 30,   30]
   let rr = [ 0,        0,    0,        -10,                  10,                -5,   +5,   -5]
   let pp = [ 'static', 'static', 'static', 'float', 'float', 'static', 'static', 'static']
+  let objType = [ 'shape', 'shape', 'shape', 'toio', 'toio', 'shape', 'shape', 'shape']
 
   for(let i=0;i<xx.length;i++)
   {
@@ -584,7 +588,7 @@ class Canvas extends Component {
     this.state.shapes.push(shape4)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    let shape5 = { // paddle R
+    let toio1 = { // paddle R
       x: 900,
       y: 650,
       width: App.toioSize,
@@ -593,11 +597,11 @@ class Canvas extends Component {
       physics: 'float',
       rotation: 0
     }
-    shape5.mode = this.state.mode
-    this.state.shapes.push(shape5)
+    toio1.mode = this.state.mode
+    this.state.shapes.push(toio1)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    let shape6 = { // paddle L
+    let toio2 = { // paddle L
       x: 100,
       y: 400,
       width: App.toioSize,
@@ -606,8 +610,8 @@ class Canvas extends Component {
       physics: 'float',
       rotation: 0
     }
-    shape6.mode = this.state.mode
-    this.state.shapes.push(shape6)
+    toio2.mode = this.state.mode
+    this.state.shapes.push(toio2)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
   }
@@ -620,7 +624,7 @@ class Canvas extends Component {
     let pp = ["static", "static", "dynamic"]
 
     for(let i =0;i<xx.length;i++){
-      let shape5 = { // for toio
+      let toio1 = { // for toio
         x: xx[i],
         y: yy[i],
         width: App.toioSize,
@@ -629,8 +633,8 @@ class Canvas extends Component {
         physics: pp[i],
         rotation: 0
       }
-      shape5.mode = this.state.mode
-      this.state.shapes.push(shape5)
+      toio1.mode = this.state.mode
+      this.state.shapes.push(toio1)
       this.setState({ currentPaths: [], shapes: this.state.shapes })
     }
 
@@ -647,7 +651,7 @@ class Canvas extends Component {
       this.setState({ currentPaths: [], shapes: this.state.shapes })
     }
 
-    let shape5 = { // for toio
+    let toio2 = { // for toio
       x: 200,
       y: 800,
       width: App.toioSize,
@@ -656,8 +660,8 @@ class Canvas extends Component {
       physics: 'float',
       rotation: 0
     }
-    shape5.mode = this.state.mode
-    this.state.shapes.push(shape5)
+    toio2.mode = this.state.mode
+    this.state.shapes.push(toio2)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
     let shape7 = {
@@ -691,7 +695,7 @@ class Canvas extends Component {
       else
       {pp = 'dynamic'; vv=false}
 
-      let shape5 = { // for toio
+      let shape5 = { //rope ends & invisible bodies
         x: start,
         y: start+(offset*i),
         radius: 20,
@@ -704,7 +708,7 @@ class Canvas extends Component {
       this.setState({ currentPaths: [], shapes: this.state.shapes })
     }
 
-    for(let i=0;i<ropeSize-1;i++){
+    for(let i=0;i<ropeSize-1;i++){ // rope
       let shape7 = {
         x: 0,
         y: 0,
@@ -717,7 +721,7 @@ class Canvas extends Component {
       this.setState({ currentPaths: [], shapes: this.state.shapes })
     }
 
-    let shape8 = { // for toio
+    let toio = { // for toio
       x: 200,
       y: 700,
       width: App.toioSize,
@@ -726,11 +730,11 @@ class Canvas extends Component {
       physics: 'dynammic',
       rotation: 0
     }
-    shape8.mode = this.state.mode
-    this.state.shapes.push(shape8)
+    toio.mode = this.state.mode
+    this.state.shapes.push(toio)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    shape8 = { // for toio
+    let toio2 = { // for toio
       x: 300,
       y: 700,
       width: App.toioSize,
@@ -739,11 +743,11 @@ class Canvas extends Component {
       physics: 'dynammic',
       rotation: 0
     }
-    shape8.mode = this.state.mode
-    this.state.shapes.push(shape8)
+    toio2.mode = this.state.mode
+    this.state.shapes.push(toio2)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-    shape8 = { // for toio
+    let toio3 = { // for toio
       x: 400,
       y: 700,
       width: App.toioSize,
@@ -752,8 +756,8 @@ class Canvas extends Component {
       physics: 'dynammic',
       rotation: 0
     }
-    shape8.mode = this.state.mode
-    this.state.shapes.push(shape8)
+    toio3.mode = this.state.mode
+    this.state.shapes.push(toio3)
     this.setState({ currentPaths: [], shapes: this.state.shapes })
 
   }
