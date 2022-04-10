@@ -8,7 +8,7 @@ class App extends Component {
     super(props)
     window.app = this
     window.App = this
-    this.socket = io('http://localhost:4000/') // uncomment for toio
+    this.socket = io('https://toio-sketch.tunnelto.dev') // uncomment for toio
 
     this.socket.on('test', (message) => {
       // console.log(message)
