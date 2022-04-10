@@ -28,6 +28,21 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
+    App.socket.on('pos', (message) => {
+      let cubes = message.cubes
+      this.cubes = cubes
+
+      let toios = cubes.map((cube) => {
+        return {
+          x: 1024 * ((cube.x - 45) / 455),
+          y: 1024 * ((cube.y - 45) / 455),
+          angle: cube.angle
+        }
+      })
+      console.log(toios[0])
+      this.setState({ toios: toios })
+    })
+
     this.stage = Konva.stages[0]
 
     // demos
@@ -147,15 +162,15 @@ class Canvas extends Component {
     let start = { x: points[0], y: points[1] }
     let end = { x: points[last-1], y: points[last] }
     let dist = Math.sqrt((end.x - start.x)**2 + (end.y - start.y)**2)
-    if (dist > bb.width || dist > bb.height) 
+    if (dist > bb.width || dist > bb.height)
     {
       let sketchPointDist =0
       for(let i=0;i<last-3;i++){
         sketchPointDist = sketchPointDist + Math.sqrt((points[i+2] - points[i])**2 + (points[i+3] - points[i+1])**2)
       }
-      if(sketchPointDist < 2.5*dist) // draw line quickly & straight to ensure correct recognition 
+      if(sketchPointDist < 2.5*dist) // draw line quickly & straight to ensure correct recognition
       {
-        shape = 
+        shape =
         {
           x: 0,
           y: 0,
@@ -166,8 +181,8 @@ class Canvas extends Component {
       }
       else // draw spring slowly and with edges to ensure correct recognition
       {
-        // spring 
-        shape = 
+        // spring
+        shape =
         {
         x: 0,
         y: 0,
@@ -274,7 +289,7 @@ class Canvas extends Component {
     this.state.shapes.push(toio1) // this.state.toios.push(toio1)
     this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
 
-    let shape2 = 
+    let shape2 =
     {
       x: 0,
       y: 0,
@@ -290,7 +305,7 @@ class Canvas extends Component {
 
 
     let xx = [ 700, 700, 700, 800, 900, 800 ]
-    let yy = [ 100, 200, 300, 300, 300, 200 ] 
+    let yy = [ 100, 200, 300, 300, 300, 200 ]
 
     for(let i=0;i<xx.length;i++) // pile of circles
     {
@@ -305,7 +320,7 @@ class Canvas extends Component {
       this.state.shapes.push(shape1)
       this.setState({ currentPaths: [], shapes: this.state.shapes })
     }
-    
+
   }
 
   newtonsCradle(){
@@ -313,7 +328,7 @@ class Canvas extends Component {
     let start = 360, offset = 90;
     for(let i=0;i<=3;i++)
     {
-      
+
       let x = start + offset*i
       let shape1 = {
         x: x,
@@ -327,7 +342,7 @@ class Canvas extends Component {
       this.state.shapes.push(shape1)
       this.setState({ currentPaths: [], shapes: this.state.shapes })
 
-      let shape2 = 
+      let shape2 =
       {
         x: 0,
         y: 0,
@@ -355,7 +370,7 @@ class Canvas extends Component {
       this.state.shapes.push(toio1) //  this.state.toios.push(toio1)
       this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
 
-      let shape2 = 
+      let shape2 =
       {
         x: 0,
         y: 0,
@@ -532,10 +547,10 @@ class Canvas extends Component {
   shape2.mode = this.state.mode
   this.state.shapes.push(shape2)
   this.setState({ currentPaths: [], shapes: this.state.shapes })
-  
+
   }
 
-  pong(){ 
+  pong(){
     //  disable gravity ----------uncomment line 49 in Physics.js
     let shape1 = { // wall
       x: 500,
@@ -685,7 +700,7 @@ class Canvas extends Component {
     let ropeSize = 24;
     let pp = 'static'
     let vv = true
-    
+
     for(let i =0;i<ropeSize;i++){
 
       if(i==0)
@@ -842,9 +857,10 @@ class Canvas extends Component {
                     key={ i }
                     id={ `toio-${i}` }
                     name={ `toio-${i}` }
-                    physics={ 'float' }
+                    // physics={ 'float' }
                     x={ toio.x }
                     y={ toio.y }
+                    rotation={ toio.angle }
                     radius={ App.toioSize }
                     width={ App.toioSize }
                     height={ App.toioSize }
@@ -853,7 +869,6 @@ class Canvas extends Component {
                     strokeWidth={ App.strokeWidth }
                     stroke={ App.toioStrokeColor }
                     fill={ App.toioFillColorAlpha }
-                    rotation={ 45 }
                     draggable
                     onClick={ this.onShapeClick.bind(this, i) }
                     onTap={ this.onShapeClick.bind(this, i) }

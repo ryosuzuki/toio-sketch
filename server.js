@@ -15,7 +15,7 @@ const io = socketio(server, {
 })
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/index.html'))
+  res.sendFile(path.join(__dirname + '/public/index.html'))
 })
 
 app.get('/simulator', (req, res) => {
@@ -33,18 +33,22 @@ server.listen(4000, () => {
 })
 
 // let cube = null
-// io.on('connection', (socket) => {
-//   console.log('connected')
+io.on('connection', (socket) => {
+  console.log('connected')
 
-//   socket.on('position', (data) => {
-//     console.log(data)
-//     if (cube) {
+  setInterval(() => {
+    socket.emit('test', new Date())
+  }, 1000)
 
-//     }
-//   })
+  socket.on('position', (data) => {
+    console.log(data)
+    if (cube) {
 
-//   // main(io)
-// })
+    }
+  })
+
+  // main(io)
+})
 
 // async function main(io) {
 //   cube = await new NearestScanner().start()
