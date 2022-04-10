@@ -22,26 +22,62 @@ class Canvas extends Component {
       currentPaths: [],
       currentId: -1,
       event: {},
-      toios: [],
       menuPos: { x: -100, y: -100 }
     }
   }
 
   componentDidMount() {
-    App.socket.on('pos', (message) => {
+    this.socket = App.socket
+
+    this.socket.on('pos', (message) => {
       let cubes = message.cubes
       this.cubes = cubes
 
-      let toios = cubes.map((cube) => {
-        return {
-          x: 1024 * ((cube.x - 45) / 455),
-          y: 1024 * ((cube.y - 45) / 455),
-          angle: cube.angle
+      let shapes = this.state.shapes
+      for (let id = 0; id < cubes.length; id++) {
+        let cube = cubes[id]
+        let shape = {
+          x: 1024 * ((cube.x - 45) / (455 - 45)),
+          y: 1024 * ((cube.y - 45) / (455 - 45)),
+          rotation: cube.angle,
+          type: 'toio',
+          physics: 'float',
+          toioId: id
         }
-      })
-      console.log(toios[0])
-      this.setState({ toios: toios })
+        let shapeId = _.findIndex(shapes, { 'toioId': id })
+        if (shapeId < 0) {
+          shapes.push(shape)
+        } else {
+          let toio = shapes[shapeId]
+          toio.x = shape.x
+          toio.y = shape.y
+          toio.rotation = shape.rotation
+          shapes[shapeId] = toio
+        }
+      }
+      this.setState({ shapes: shapes})
     })
+
+    setInterval(() => {
+      let nodes = canvas.layer.children
+      let cubes = []
+      for (let node of nodes) {
+        let id = node.getAttr('id')
+        if (!id.includes('toio')) continue
+
+        let x = node.getAttr('x')
+        let y = node.getAttr('y')
+        let angle = node.getAttr('rotation')
+        cubes.push({
+          x: x / 1024 * (455 - 45) + 45,
+          y: y / 1024 * (455 - 45) + 45,
+          angle: angle,
+        })
+      }
+      if (cubes.length > 0) {
+        this.socket.emit('move', cubes[0])
+      }
+    }, 100)
 
     this.stage = Konva.stages[0]
 
@@ -242,6 +278,13 @@ class Canvas extends Component {
     console.log(this)
     event.evt.preventDefault()
     console.log('context')
+  }
+
+  onToioClick(id) {
+    console.log(id)
+    let x = this.state.event.evt.clientX
+    let y = this.state.event.evt.clientY
+    this.setState({ menuPos: { x: x, y: y }, toioId: id })
   }
 
   onShapeClick(id) {
@@ -851,13 +894,14 @@ class Canvas extends Component {
                 }) }
               </Group>
               {/* Toio */}
+              {/*
               { this.state.toios.map((toio, i) => {
                 return (
                   <Rect
                     key={ i }
                     id={ `toio-${i}` }
                     name={ `toio-${i}` }
-                    // physics={ 'float' }
+                    physics={ 'float' }
                     x={ toio.x }
                     y={ toio.y }
                     rotation={ toio.angle }
@@ -870,13 +914,37 @@ class Canvas extends Component {
                     stroke={ App.toioStrokeColor }
                     fill={ App.toioFillColorAlpha }
                     draggable
-                    onClick={ this.onShapeClick.bind(this, i) }
-                    onTap={ this.onShapeClick.bind(this, i) }
+                    onClick={ this.onToioClick.bind(this, i) }
+                    onTap={ this.onToioClick.bind(this, i) }
                   />
                 )
-              })}
+              })}*/}
               {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
+                  if (shape.type === 'toio') {
+                    return (
+                      <Rect
+                        key={ i }
+                        id={ `toio-${i}` }
+                        name={ `toio-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        rotation={ shape.angle }
+                        radius={ App.toioSize }
+                        width={ App.toioSize }
+                        height={ App.toioSize }
+                        offsetX={ App.toioSize/2 }
+                        offsetY={ App.toioSize/2 }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.toioStrokeColor }
+                        fill={ App.toioFillColorAlpha }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
+                      />
+                    )
+                  }
                   if (shape.type === 'rect') {
                     return (
                       <Rect
@@ -995,9 +1063,6 @@ class Canvas extends Component {
                     )
                   }
               }) }
-
-
-
 
               <Physics
                 canvas={ this }

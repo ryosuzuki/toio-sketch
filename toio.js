@@ -23,7 +23,7 @@ class Toio {
       console.log('connected')
 
       socket.on('move', (data) => {
-        // console.log(data)
+        console.log(data)
         this.targetX = data.x
         this.targetY = data.y
       })

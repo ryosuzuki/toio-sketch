@@ -206,7 +206,7 @@ class Physics extends Component {
 
     if ( shapeType === 'line') {
       // TODO: need to change the attached body based on the intersected object
-       
+
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
         bodyB: bodyToAttach
@@ -271,7 +271,7 @@ class Physics extends Component {
       */
     }
     if ( shapeType === 'linetwo') {
-       
+
       // adding nearest body to start point
 
       let bodyToAttach2 = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
@@ -291,14 +291,14 @@ class Physics extends Component {
       })
 
     } else if ( shapeType === 'lineelastic') { //super elastic constraint for InSitu TUI
-       
+
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
-        bodyB: bodyToAttach, 
+        bodyB: bodyToAttach,
         stiffness: 0.005
-    }) 
+    })
 
-    Matter.Events.on(this.engine,'afterUpdate',()=>{ // based on stretching the other body moves 
+    Matter.Events.on(this.engine,'afterUpdate',()=>{ // based on stretching the other body moves
       let bodies = this.engine.world.bodies
       // console.log("yes");
       bodies.forEach(element => {
@@ -324,7 +324,7 @@ class Physics extends Component {
       let shotFlag = 0;
       Matter.Events.on(this.engine,'afterUpdate',()=>{ // removes the bodyToAttach from the slingshot and adds a new one
         let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
-        if (this.mouseConstraint.mouse.button ===-1 && shotFlag==0 && dist>4*bodyToAttach.circleRadius) 
+        if (this.mouseConstraint.mouse.button ===-1 && shotFlag==0 && dist>4*bodyToAttach.circleRadius)
         {
           shotFlag=1;
           bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , {density: 0.04});
