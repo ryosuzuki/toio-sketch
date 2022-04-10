@@ -11,12 +11,6 @@ class App extends Component {
     this.socket = io('http://localhost:4000')
     // this.socket = io('https://toio-sketch.tunnelto.dev')
 
-    this.socket.on('test', (message) => {
-      // console.log(message)
-    })
-
-    this.cubes = []
-
     this.size = 1024
     this.state = {
       dragging: false,
