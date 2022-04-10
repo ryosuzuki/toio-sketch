@@ -1,54 +1,51 @@
-class Slingshot extends Component {
-  constructor(props) {
-    this.positions = [
-      { x: 400, y: 400 },
-      { x: 280, y: 380 },
-      { x: 380, y: 280 },
-      { x: 140, y: 340 },
-      { x: 340, y: 140 },
-      { x: 240, y: 240 },
-    ]
-  }
+class Slingshot {
+  init(canvas) {
+    let shapes = canvas.state.shapes
 
-  render() {
-    return (
-      <>
-        <Rect
-          x={ 300 }
-          y={ 300 }
-          width={ App.toioSize }
-          height={ App.toioSize }
-          offsetX={ App.toioSize/2 }
-          offsetY={ App.toioSize/2 }
-          strokeWidth={ App.strokeWidth }
-          stroke={ App.toioStrokeColor }
-          fill={ App.toioFillColorAlpha }
-          rotation={ 45 }
-          draggable
-        />
-        <Spring
-          x={ 0 }
-          y={ 0 }
-          length={ 0 }
-          start={ { x: 300, y: 700 } }
-          end={ { x: 300, y: 700 } }
-          strokeWidth={ App.strokeWidth }
-          stroke={ App.strokeColor }
-        />
-        { this.positions.map((pos, i) => {
-          return (
-            <Circle
-              x={ 1024- pos.x }
-              y={ pos.y }
-              radius={ 40 }
-              strokeWidth={ App.strokeWidth }
-              stroke={ App.strokeColor }
-              fill={ App.fillColorAlpha }
-              draggable
-            />
-          )
-        })}
-      </>
-    )
+    // disable gravity ----------uncomment line 49 in Physics.js
+    let toio = {  // for toio
+      x: 300,
+      y: 900,
+      angle: 45,
+      type: 'toio',
+      physics: 'dynamic',
+      visible: true
+    }
+    shapes.push(toio)
+
+    let spring = {
+      x: 0,
+      y: 0,
+      start: { x: 300, y: 700 },
+      end: { x: 300, y: 900 },
+      length: 0, // Math.sqrt((points[last-1]-points[0])**2 + (points[last]-points[1])**2),
+      type: 'spring',
+      physics: 'spring'
+    }
+    shapes.push(spring)
+
+    let balls = [
+      { x: 700, y: 100},
+      { x: 700, y: 200},
+      { x: 700, y: 300},
+      { x: 800, y: 300},
+      { x: 900, y: 300},
+      { x: 800, y: 200}
+    ]
+    for (let ball of balls) {
+      let shape = {
+        x: ball.x,
+        y: ball.y,
+        radius: 40,
+        type: 'circle',
+        physics: 'dynamic'
+      }
+      shapes.push(shape)
+    }
+
+    canvas.setState({ shapes: shapes })
+
   }
 }
+
+export default Slingshot

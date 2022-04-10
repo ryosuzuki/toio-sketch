@@ -1,63 +1,83 @@
-class Rope extends Component {
-  render() {
-    return (
-      <>
-        <Line
-          key={ 0 }
-          id={ `rope-0` }
-          name={ `rope-0` }
-          x={ 0 }
-          y={ 0 }
-          points={ [] }
-          strokeWidth={ App.strokeWidth }
-          stroke={ App.strokeColor }
-          draggable
-        />
-        <Circle
-          key={ 1 }
-          id={ `circle-${0}` }
-          name={ `circle-${0}` }
-          x={ 0 }
-          y={ 0 }
-          radius={ 30 }
-          strokeWidth={ App.strokeWidth }
-          stroke={ App.strokeColor }
-          fill={ App.fillColorAlpha }
-          draggable
-        />
-        <Circle
-          key={ 2 }
-          id={ `circle-${1}` }
-          name={ `circle-${1}` }
-          x={ 0 }
-          y={ 0 }
-          radius={ 30 }
-          strokeWidth={ App.strokeWidth }
-          stroke={ App.strokeColor }
-          fill={ App.fillColorAlpha }
-          draggable
-        />
-        { [0, 1, 2].map(i => {
-          return (
-            <Rect
-              key={ `rect-${i}` }
-              id={ `rect-${i}` }
-              name={ `rect-${i}` }
-              x={ 300 + 100 * i }
-              y={ 0 }
-              width={ App.toioSize }
-              height={ App.toioSize }
-              physics={ 'float' }
-              offsetX={ App.toioSize/2 }
-              offsetY={ App.toioSize/2 }
-              strokeWidth={ App.strokeWidth }
-              stroke={ App.toioStrokeColor }
-              fill={ App.toioFillColorAlpha }
-              draggable
-            />
-          )
-        })}
-      </>
-    )
+class Rope {
+  init(canvas) {
+    let shapes = canvas.state.shapes
+
+    // disable gravity ----------uncomment line 49 in Physics.js
+    let start = 100
+    let offset = 40
+    let ropeSize = 24;
+    let pp = 'static'
+    let vv = true
+
+    for (let i = 0; i < ropeSize; i++) {
+      if (i === 0) {
+        pp = 'static'
+      } else if (i === ropeSize-1) {
+        pp = 'dynamic'
+        vv = true
+      } else {
+        pp = 'dynamic'
+        vv = false
+      }
+
+      let shape5 = { //rope ends & invisible bodies
+        x: start,
+        y: start+(offset*i),
+        radius: 20,
+        type: 'circle',
+        physics: pp,
+        visible: vv
+      }
+      shapes.push(shape5)
+    }
+
+    for(let i=0;i<ropeSize-1;i++){ // rope
+      let shape7 = {
+        x: 0,
+        y: 0,
+        points: [start, start+(offset*i), start, start+(offset*(i+1))],
+        type: 'linetwo',
+        physics: 'constrainttwo'
+      }
+      shapes.push(shape7)
+    }
+
+    let toio = { // for toio
+      x: 200,
+      y: 700,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic',
+      rotation: 0
+    }
+    shapes.push(toio)
+
+    let toio2 = { // for toio
+      x: 300,
+      y: 700,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic',
+      rotation: 0
+    }
+    shapes.push(toio2)
+
+    let toio3 = { // for toio
+      x: 400,
+      y: 700,
+      width: App.toioSize,
+      height: App.toioSize,
+      type: 'rect',
+      physics: 'dynammic',
+      rotation: 0
+    }
+    shapes.push(toio3)
+
+
+    canvas.setState({ shapes: shapes })
   }
 }
+
+export default Rope

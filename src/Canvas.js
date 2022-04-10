@@ -7,6 +7,14 @@ import Physics from './Physics'
 import Transform from './Transform'
 import Spring from './Spring'
 
+import Slingshot from './examples/Slingshot'
+import NewtonsCradle from './examples/NewtonsCradle'
+import RubeGoldberg from './examples/RubeGoldberg'
+import Piston from './examples/Piston'
+import Pinball from './examples/Pinball'
+import Rope from './examples/Rope'
+import Slider from './examples/Slider'
+
 window.Konva = Konva
 let debug = false
 
@@ -29,75 +37,93 @@ class Canvas extends Component {
   componentDidMount() {
     this.socket = App.socket
 
-    this.socket.on('pos', (message) => {
-      let cubes = message.cubes
-      this.cubes = cubes
-
+    // debug
+    if (!this.socket) {
+      /*
+      let cube = { x: 250, y: 250, angle: 0 }
+      let shape = {
+        x: 1024 * ((cube.x - 45) / (455 - 45)),
+        y: 1024 * ((cube.y - 45) / (455 - 45)),
+        rotation: cube.angle,
+        type: 'toio',
+        physics: 'float',
+        toioId: 0
+      }
       let shapes = this.state.shapes
-      for (let id = 0; id < cubes.length; id++) {
-        let cube = cubes[id]
-        let shape = {
-          x: 1024 * ((cube.x - 45) / (455 - 45)),
-          y: 1024 * ((cube.y - 45) / (455 - 45)),
-          rotation: cube.angle,
-          type: 'toio',
-          physics: 'float',
-          toioId: id
-        }
-        let shapeId = _.findIndex(shapes, { 'toioId': id })
-        if (shapeId < 0) {
-          shapes.push(shape)
-        } else {
-          let toio = shapes[shapeId]
-          toio.x = shape.x
-          toio.y = shape.y
-          toio.rotation = shape.rotation
-          shapes[shapeId] = toio
-        }
-      }
+      shapes.push(shape)
       this.setState({ shapes: shapes})
-    })
+      */
+    } else {
+      this.socket.on('pos', (message) => {
+        let cubes = message.cubes
+        this.cubes = cubes
 
-    setInterval(() => {
-      let nodes = canvas.layer.children
-      let cubes = []
-      for (let node of nodes) {
-        let id = node.getAttr('id')
-        if (!id.includes('toio')) continue
+        let shapes = this.state.shapes
+        for (let id = 0; id < cubes.length; id++) {
+          let cube = cubes[id]
+          let shape = {
+            x: 1024 * ((cube.x - 45) / (455 - 45)),
+            y: 1024 * ((cube.y - 45) / (455 - 45)),
+            rotation: cube.angle,
+            type: 'toio',
+            physics: 'float',
+            toioId: id
+          }
+          let shapeId = _.findIndex(shapes, { 'toioId': id })
+          if (shapeId < 0) {
+            shapes.push(shape)
+          } else {
+            let toio = shapes[shapeId]
+            toio.x = shape.x
+            toio.y = shape.y
+            toio.rotation = shape.rotation
+            shapes[shapeId] = toio
+          }
+        }
+        this.setState({ shapes: shapes})
+      })
 
-        let x = node.getAttr('x')
-        let y = node.getAttr('y')
-        let angle = node.getAttr('rotation')
-        cubes.push({
-          x: x / 1024 * (455 - 45) + 45,
-          y: y / 1024 * (455 - 45) + 45,
-          angle: angle,
-        })
-      }
-      if (cubes.length > 0) {
-        this.socket.emit('move', cubes[0])
-      }
-    }, 100)
+      setInterval(() => {
+        let nodes = canvas.layer.children
+        let cubes = []
+        for (let node of nodes) {
+          let id = node.getAttr('id')
+          if (!id.includes('toio')) continue
+
+          let x = node.getAttr('x')
+          let y = node.getAttr('y')
+          let angle = node.getAttr('rotation')
+          cubes.push({
+            x: x / 1024 * (455 - 45) + 45,
+            y: y / 1024 * (455 - 45) + 45,
+            angle: angle,
+          })
+        }
+        if (cubes.length > 0) {
+          this.socket.emit('move', cubes[0])
+        }
+      }, 100)
+    }
 
     this.stage = Konva.stages[0]
 
     // demos
-    this.slingShot = this.slingShot.bind(this)
-    this.newtonsCradle = this.newtonsCradle.bind(this)
-    this.rubeGoldberg = this.rubeGoldberg.bind(this)
-    this.pistonMech = this.pistonMech.bind(this)
-    this.pinBall = this.pinBall.bind(this)
-    this.pong = this.pong.bind(this)
-    this.inSituTui = this.inSituTui.bind(this)
-    this.rope = this.rope.bind(this)
-    // this.slingShot() //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.newtonsCradle()
-    // this.rubeGoldberg()
-    // this.pistonMech()
-    // this.pinBall()
-    // this.pong() //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.inSituTui() //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.rope() //  disable gravity ----------uncomment line 49 in Physics.js
+    this.slingshot = new Slingshot()
+    this.newtonsCradle = new NewtonsCradle()
+    this.rubeGoldberg = new RubeGoldberg()
+    this.piston = new Piston()
+    this.pinball = new Pinball()
+    this.rope = new Rope()
+    this.slider = new Slider()
+
+    this.slingshot.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.newtonsCradle.init(this)
+    // this.rubeGoldberg.init(this)
+    // this.piston.init(this)
+    // this.pinball.init(this)
+    // this.pong.init(this)) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.rope.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.slider.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
   }
 
   mouseDown(pos) {
@@ -316,508 +342,6 @@ class Canvas extends Component {
 
   onMouseUp() {
     console.log('up')
-  }
-
-  slingShot(){
-    // disable gravity ----------uncomment line 49 in Physics.js
-    let toio1 = {  // for toio
-      x: 300,
-      y: 900,
-      radius: 40,
-      type: 'circle',
-      physics: 'dynamic',
-      visible: true
-    }
-    toio1.mode = this.state.mode
-    this.state.shapes.push(toio1) // this.state.toios.push(toio1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
-
-    let shape2 =
-    {
-      x: 0,
-      y: 0,
-      start: { x: 300, y: 700 },
-      end: { x: 300, y: 900 },
-      length: 0, // Math.sqrt((points[last-1]-points[0])**2 + (points[last]-points[1])**2),
-      type: 'spring',
-      physics: 'spring'
-    }
-    shape2.mode = this.state.mode
-    this.state.shapes.push(shape2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-
-    let xx = [ 700, 700, 700, 800, 900, 800 ]
-    let yy = [ 100, 200, 300, 300, 300, 200 ]
-
-    for(let i=0;i<xx.length;i++) // pile of circles
-    {
-      let shape1 = {
-        x: xx[i],
-        y: yy[i],
-        radius: 40,
-        type: 'circle',
-        physics: 'dynamic'
-      }
-      shape1.mode = this.state.mode
-      this.state.shapes.push(shape1)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-  }
-
-  newtonsCradle(){
-
-    let start = 360, offset = 90;
-    for(let i=0;i<=3;i++)
-    {
-
-      let x = start + offset*i
-      let shape1 = {
-        x: x,
-        y: 700,
-        radius: 40,
-        type: 'circle',
-        physics: 'dynamic',
-        visible: true
-      }
-      shape1.mode = this.state.mode
-      this.state.shapes.push(shape1)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-      let shape2 =
-      {
-        x: 0,
-        y: 0,
-        points: [x, 350, x, 700],
-        type: 'line',
-        physics: 'constraint'
-      }
-      shape2.mode = this.state.mode
-      this.state.shapes.push(shape2)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-    for(let i=4;i<=5;i++) // for toios
-    {
-      let x = (i === 4) ? start - offset : start + offset * 4
-      let toio1 = {
-        x: x,
-        y: 700,
-        radius: 40,
-        type: 'circle',
-        physics: 'dynamic',
-        visible: true
-      }
-      toio1.mode = this.state.mode
-      this.state.shapes.push(toio1) //  this.state.toios.push(toio1)
-      this.setState({ currentPaths: [], shapes: this.state.shapes }) // this.setState({ currentPaths: [], toios: this.state.toios })
-
-      let shape2 =
-      {
-        x: 0,
-        y: 0,
-        points: [x, 350, x, 700],
-        type: 'line',
-        physics: 'constraint'
-      }
-      shape2.mode = this.state.mode
-      this.state.shapes.push(shape2)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-  }
-
-  rubeGoldberg(){
-    let xx = [500, 700, 300, 900]
-    let yy = [350, 800, 100, 600]
-    let ww = [600, 600,  50,  50]
-    let hh = [ 50,  50,  50,  50]
-    let rr = [ 2, -10,  5, -5]
-    let pp = [ 'static', 'static',  'dynamic', 'dynamic']
-    let objType = [ 'shape', 'shape',  'toio', 'toio']
-
-    for(let i=0;i<xx.length;i++)
-    {
-      let shape1 = {
-        x: xx[i],
-        y: yy[i],
-        width: ww[i],
-        height: hh[i],
-        rotation: rr[i],
-        type: 'rect',
-        physics: pp[i]
-      }
-      shape1.mode = this.state.mode
-      this.state.shapes.push(shape1)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-    let shape2 = {
-      x: 700,
-      y: 200,
-      radius: 40,
-      type: 'circle',
-      physics: 'dynamic',
-      visible: true
-    }
-    shape2.mode = this.state.mode
-    this.state.shapes.push(shape2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-  }
-
-  pistonMech(){
-    let shape1 = { //  joint
-      x: 240,
-      y: 300,
-      radius: 40,
-      type: 'circle',
-      physics: 'float',
-      visible: true
-    }
-    shape1.mode = this.state.mode
-    this.state.shapes.push(shape1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape2 = { // crank
-      x: 240,
-      y: 512,
-      radius: 160,
-      type: 'circle',
-      physics: 'static',
-      visible: true
-    }
-    shape2.mode = this.state.mode
-    this.state.shapes.push(shape2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let toio1 = { // for toio  // PISTON
-      x: 600,
-      y: 512,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'dynammic',
-      rotation: 0
-    }
-    toio1.mode = this.state.mode
-    this.state.shapes.push(toio1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape5 = { // wall
-      x: 700,
-      y: 512-55,
-      width: 400,
-      height: 50,
-      type: 'rect',
-      physics: 'static',
-      rotation: 0
-    }
-    shape5.mode = this.state.mode
-    this.state.shapes.push(shape5)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape6 = { // wall
-      x: 700,
-      y: 512+55,
-      width: 400,
-      height: 50,
-      type: 'rect',
-      physics: 'static',
-      rotation: 0
-    }
-    shape6.mode = this.state.mode
-    this.state.shapes.push(shape6)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape3 = {
-      x: 0,
-      y: 0,
-      points: [240, 512, 240, 300],
-      type: 'line',
-      physics: 'constraint'
-    }
-    shape3.mode = this.state.mode
-    this.state.shapes.push(shape3)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape7 = {
-      x: 0,
-      y: 0,
-      points: [240, 300, 600, 512],
-      type: 'linetwo',
-      physics: 'constrainttwo'
-    }
-    shape7.mode = this.state.mode
-    this.state.shapes.push(shape7)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-  }
-
-  pinBall(){
-  let xx = [510,      100,  1024-100,  330,                 700,              500, 700, 350]
-  let yy = [125,      550,  550,       850,                 850,              600, 430, 300]
-  let ww = [1024-150,  50,   50,        App.toioSize * 4,   App.toioSize * 4, 300, 300, 300]
-  let hh = [ 50,       800,  800,      App.toioSize,        App.toioSize,      30, 30,   30]
-  let rr = [ 0,        0,    0,        -10,                  10,                -5,   +5,   -5]
-  let pp = [ 'static', 'static', 'static', 'float', 'float', 'static', 'static', 'static']
-  let objType = [ 'shape', 'shape', 'shape', 'toio', 'toio', 'shape', 'shape', 'shape']
-
-  for(let i=0;i<xx.length;i++)
-  {
-    let shape1 = {
-      x: xx[i],
-      y: yy[i],
-      width: ww[i],
-      height: hh[i],
-      rotation: rr[i],
-      type: 'rect',
-      physics: pp[i]
-    }
-    shape1.mode = this.state.mode
-    this.state.shapes.push(shape1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-  }
-
-  let shape2 = {
-    x: 500,
-    y: 500,
-    radius: 50,
-    type: 'circle',
-    physics: 'dynamic',
-    visible: true
-  }
-  shape2.mode = this.state.mode
-  this.state.shapes.push(shape2)
-  this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-  }
-
-  pong(){
-    //  disable gravity ----------uncomment line 49 in Physics.js
-    let shape1 = { // wall
-      x: 500,
-      y: 150,
-      width: 800,
-      height: 50,
-      type: 'rect',
-      physics: 'static',
-      rotation: 0
-    }
-    shape1.mode = this.state.mode
-    this.state.shapes.push(shape1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape2 = { // wall
-      x: 500,
-      y: 1024-150,
-      width: 800,
-      height: 50,
-      type: 'rect',
-      physics: 'static',
-      rotation: 0
-    }
-    shape2.mode = this.state.mode
-    this.state.shapes.push(shape2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape3 = { // virtual ball
-      x: 400,
-      y: 400,
-      radius: 50,
-      type: 'circle',
-      physics: 'dynamic',
-      visible: true
-    }
-    shape3.mode = this.state.mode
-    this.state.shapes.push(shape3)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape4 = { // toio ball
-      x: 600,
-      y: 600,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'dynamic',
-      rotation: 0
-    }
-    shape4.mode = this.state.mode
-    this.state.shapes.push(shape4)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let toio1 = { // paddle R
-      x: 900,
-      y: 650,
-      width: App.toioSize,
-      height: App.toioSize*4,
-      type: 'rect',
-      physics: 'float',
-      rotation: 0
-    }
-    toio1.mode = this.state.mode
-    this.state.shapes.push(toio1)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let toio2 = { // paddle L
-      x: 100,
-      y: 400,
-      width: App.toioSize,
-      height: App.toioSize*4,
-      type: 'rect',
-      physics: 'float',
-      rotation: 0
-    }
-    toio2.mode = this.state.mode
-    this.state.shapes.push(toio2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-  }
-
-
-  inSituTui(){
-    //  disable gravity ----------uncomment line 49 in Physics.js
-    let xx = [400, 500, 600]
-    let yy = [400, 300, 400]
-    let pp = ["static", "static", "dynamic"]
-
-    for(let i =0;i<xx.length;i++){
-      let toio1 = { // for toio
-        x: xx[i],
-        y: yy[i],
-        width: App.toioSize,
-        height: App.toioSize,
-        type: 'rect',
-        physics: pp[i],
-        rotation: 0
-      }
-      toio1.mode = this.state.mode
-      this.state.shapes.push(toio1)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-    for(let i=0;i<xx.length-1;i++){
-      let shape7 = {
-        x: 0,
-        y: 0,
-        points: [xx[i], yy[i], xx[i+1], yy[i+1]],
-        type: 'linetwo',
-        physics: 'constrainttwo'
-      }
-      shape7.mode = this.state.mode
-      this.state.shapes.push(shape7)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-    let toio2 = { // for toio
-      x: 200,
-      y: 800,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'float',
-      rotation: 0
-    }
-    toio2.mode = this.state.mode
-    this.state.shapes.push(toio2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let shape7 = {
-      x: 0,
-      y: 0,
-      points: [100, 800, 200, 800],
-      type: 'lineelastic',
-      physics: 'constraint'
-    }
-    shape7.mode = this.state.mode
-    this.state.shapes.push(shape7)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-  }
-
-  rope(){
-
-    // disable gravity ----------uncomment line 49 in Physics.js
-
-    let start = 100
-    let offset = 40
-    let ropeSize = 24;
-    let pp = 'static'
-    let vv = true
-
-    for(let i =0;i<ropeSize;i++){
-
-      if(i==0)
-      {pp = 'static'}
-      else if (i==ropeSize-1)
-      {pp = 'dynamic';vv = true}
-      else
-      {pp = 'dynamic'; vv=false}
-
-      let shape5 = { //rope ends & invisible bodies
-        x: start,
-        y: start+(offset*i),
-        radius: 20,
-        type: 'circle',
-        physics: pp,
-        visible: vv
-      }
-      shape5.mode = this.state.mode
-      this.state.shapes.push(shape5)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-    for(let i=0;i<ropeSize-1;i++){ // rope
-      let shape7 = {
-        x: 0,
-        y: 0,
-        points: [start, start+(offset*i), start, start+(offset*(i+1))],
-        type: 'linetwo',
-        physics: 'constrainttwo'
-      }
-      shape7.mode = this.state.mode
-      this.state.shapes.push(shape7)
-      this.setState({ currentPaths: [], shapes: this.state.shapes })
-    }
-
-    let toio = { // for toio
-      x: 200,
-      y: 700,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'dynammic',
-      rotation: 0
-    }
-    toio.mode = this.state.mode
-    this.state.shapes.push(toio)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let toio2 = { // for toio
-      x: 300,
-      y: 700,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'dynammic',
-      rotation: 0
-    }
-    toio2.mode = this.state.mode
-    this.state.shapes.push(toio2)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
-    let toio3 = { // for toio
-      x: 400,
-      y: 700,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'dynammic',
-      rotation: 0
-    }
-    toio3.mode = this.state.mode
-    this.state.shapes.push(toio3)
-    this.setState({ currentPaths: [], shapes: this.state.shapes })
-
   }
 
   render() {

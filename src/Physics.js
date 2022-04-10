@@ -46,7 +46,7 @@ class Physics extends Component {
       }
     })
     this.engine = engine
-    // this.engine.gravity = {x:0,y:0}  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
+    this.engine.gravity = {x: 0, y: 0}  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
     this.runner = runner
     this.matterRender = render
 
@@ -291,28 +291,22 @@ class Physics extends Component {
       })
 
     } else if ( shapeType === 'lineelastic') { //super elastic constraint for InSitu TUI
-
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
         bodyB: bodyToAttach,
         stiffness: 0.005
-    })
-
-    Matter.Events.on(this.engine,'afterUpdate',()=>{ // based on stretching the other body moves
-      let bodies = this.engine.world.bodies
-      // console.log("yes");
-      bodies.forEach(element => {
-        if(element!=bodyToAttach){
-        let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
-        // Matter.Body.applyForce(element, {x:0,y:1} ,{x:0,y:-0.00001*dist})
-        Matter.Body.setVelocity(element, {x:0,y:-0.001*dist})
-      }
-
-      });
-    })
-
-
-
+      })
+      Matter.Events.on(this.engine,'afterUpdate',()=>{ // based on stretching the other body moves
+        let bodies = this.engine.world.bodies
+        // console.log("yes");
+        bodies.forEach(element => {
+          if(element!=bodyToAttach){
+            let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
+            // Matter.Body.applyForce(element, {x:0,y:1} ,{x:0,y:-0.00001*dist})
+            Matter.Body.setVelocity(element, {x:0,y:-0.001*dist})
+          }
+        });
+      })
 
     } else if(shapeType === 'spring'){
       constraint = Matter.Constraint.create({
@@ -333,7 +327,6 @@ class Physics extends Component {
         }
       })
     }
-
 
     if (!constraint) return false
     constraint.id = id
