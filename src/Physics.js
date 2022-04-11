@@ -48,7 +48,7 @@ class Physics extends Component {
     this.engine = engine
 
     if (['slingshot', 'pong', 'slider', 'rope'].includes(canvas.example)) {
-      this.engine.gravity = {x: 0, y: 0}  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
+      this.engine.gravity = { x: 0, y: 0 }  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
     }
 
     this.runner = runner
@@ -175,8 +175,8 @@ class Physics extends Component {
       body.friction = 0
       body.frictionAir = 0
     }
-    console.log(id)
     if (canvas.example === 'rube-goldberg') {
+      console.log(id)
       if (id.includes('toio-2')) {
         body.friction = 0
       }
@@ -216,7 +216,7 @@ class Physics extends Component {
     let shapeId = Number(node.id().split('-')[1])
     let bodyToAttach = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
 
-    let offset = 10
+    let offset = 100
     this.engine.world.bodies.forEach(body => {
       // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
       if(body.bounds.max.x + offset > endPoint.x &&
@@ -230,7 +230,7 @@ class Physics extends Component {
     Matter.Body.setPosition(bodyToAttach, { x: endPoint.x, y: endPoint.y }) // Body snaps to the constraint
 
     let bodyToAttach2 = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
-    offset = 100
+    offset = 50
     this.engine.world.bodies.forEach(body => {
       // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
       if(body.bounds.max.x + offset > startPoint.x &&
@@ -366,23 +366,23 @@ class Physics extends Component {
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
         bodyB: bodyToAttach,
-        render:{strokeStyle: 'red'},
+        render: { strokeStyle: 'red' },
         stiffness: 0.05
       })
       console.log(constraint)
       let shotFlag = 0;
 
-      setTimeout(() => {
-        Matter.Events.on(this.engine,'afterUpdate', () => { // removes the bodyToAttach from the slingshot and adds a new one
+      // setTimeout(() => {
+        Matter.Events.on(this.engine, 'afterUpdate', () => { // removes the bodyToAttach from the slingshot and adds a new one
           let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
-          if (this.mouseConstraint.mouse.button ===-1 && shotFlag==0 && dist>4*bodyToAttach.circleRadius) {
-            shotFlag=1;
-            bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , {density: 0.04});
-            Matter.Composite.add(this.engine.world, bodyToAttach);
-            constraint.bodyB = bodyToAttach;
+          if (this.mouseConstraint.mouse.button === -1 && shotFlag === 0 && dist > 4*bodyToAttach.circleRadius) {
+            shotFlag = 1
+            bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , { density: 0.04 })
+            Matter.Composite.add(this.engine.world, bodyToAttach)
+            constraint.bodyB = bodyToAttach
           }
         })
-      }, 1000)
+      // }, 1000)
     }
 
     if (!constraint) return false

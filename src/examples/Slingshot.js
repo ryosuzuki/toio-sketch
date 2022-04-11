@@ -2,24 +2,22 @@ class Slingshot {
   init(canvas) {
     canvas.example = 'slingshot'
     let shapes = canvas.state.shapes
+    /*
 
-    // disable gravity ----------uncomment line 49 in Physics.js
     let toio = {  // for toio
-      x: 300,
-      y: 900,
+      x: 200,
+      y: 800,
       angle: 45,
       type: 'toio',
-      physics: 'dynamic',
-      visible: true
+      physics: 'dynamic'
     }
     shapes.push(toio)
 
-    /*
     let spring = {
       x: 0,
       y: 0,
       start: { x: 300, y: 700 },
-      end: { x: 300, y: 900 },
+      end: { x: 200, y: 800 },
       length: 0, // Math.sqrt((points[last-1]-points[0])**2 + (points[last]-points[1])**2),
       type: 'spring',
       physics: 'spring'

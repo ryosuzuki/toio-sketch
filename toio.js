@@ -1,6 +1,6 @@
 const { NearScanner } = require('@toio/scanner')
 const { NearestScanner } = require('@toio/scanner')
-let num = 1
+let num = 2
 
 class Toio {
   constructor() {
@@ -46,7 +46,7 @@ class Toio {
     console.log('toio connected')
 
     for (let cube of this.cubes) {
-      cube.on('id:position-id', data => {
+      cube.on('id:position-id', (data) => {
         cube.x = data.x
         cube.y = data.y
         cube.angle = data.angle
@@ -55,6 +55,12 @@ class Toio {
         })
         this.io.sockets.emit('pos', { cubes: cubes })
       })
+
+      cube.on('button:press', (data) => {
+        console.log(data)
+        this.io.sockets.emit('button', data)
+      })
+
     }
 
     setInterval(() => {

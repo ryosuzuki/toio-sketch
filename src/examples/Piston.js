@@ -3,6 +3,7 @@ class Piston {
     canvas.example = 'piston'
     let shapes = canvas.state.shapes
 
+    /*
     let toio1 = { //  joint
       x: 240,
       y: 300,
@@ -18,6 +19,7 @@ class Piston {
       physics: 'dynammic',
     }
     shapes.push(toio2)
+    */
 
     let wall1 = { // wall
       x: 700,

@@ -34,6 +34,8 @@ class Canvas extends Component {
       menuPos: { x: -100, y: -100 }
     }
 
+    this.pressed = false
+
     // demos
     this.slingshot = new Slingshot()
     this.piston = new Piston()
@@ -45,11 +47,11 @@ class Canvas extends Component {
     this.slider = new Slider()
 
     // this.slingshot.init(this)
-    // this.piston.init(this)
+    this.piston.init(this)
     // this.pong.init(this)
     // this.newtonsCradle.init(this)
     // this.pinball.init(this)
-    this.rubeGoldberg.init(this)
+    // this.rubeGoldberg.init(this)
     // this.rope.init(this)
     // this.slider.init(this)
   }
@@ -89,21 +91,66 @@ class Canvas extends Component {
             physics: 'float',
             toioId: id
           }
+          if (this.example === 'slingshot') {
+            toio.physics = 'dynamic'
+          }
           let shapeId = _.findIndex(shapes, { 'toioId': id })
           if (shapeId < 0) {
             shapes.push(shape)
           } else {
-            let toio = shapes[shapeId]
-            toio.x = shape.x
-            toio.y = shape.y
-            toio.rotation = shape.rotation
-            shapes[shapeId] = toio
+            if (this.pressed) {
+              let toio = shapes[shapeId]
+              toio.x = shape.x
+              toio.y = shape.y
+              toio.rotation = shape.rotation
+              shapes[shapeId] = toio
+            }
           }
         }
         this.setState({ shapes: shapes})
+        if (this.pressed) {
+          this.socket.emit('move', cubes[0])
+          let x = 1024 * ((this.cubes[0].x - 45) / (455 - 45))
+          let y = 1024 * ((this.cubes[0].y - 45) / (455 - 45))
+          let event = new MouseEvent('mousemove' , {
+            clientX: x,
+            clientY: y,
+            pageX: x,
+            pageY: y,
+          })
+          this.physics.mouseEvent(event)
+        }
+      })
+
+      this.socket.on('button', (data) => {
+        console.log(data)
+        this.pressed = data.pressed
+        let x = 1024 * ((this.cubes[0].x - 45) / (455 - 45))
+        let y = 1024 * ((this.cubes[0].y - 45) / (455 - 45))
+        if (data.pressed) {
+          let event = new MouseEvent('mousedown' , {
+            clientX: x,
+            clientY: y,
+            pageX: x,
+            pageY: y,
+          })
+          this.physics.mouseEvent(event)
+        } else {
+          let event = new MouseEvent('mouseup' , {
+            clientX: x,
+            clientY: y,
+            pageX: x,
+            pageY: y,
+          })
+          this.physics.mouseEvent(event)
+        }
       })
 
       setInterval(() => {
+        if (this.pressed) {
+          console.log('pressed')
+          return false
+        }
         let nodes = canvas.layer.children
         let cubes = []
         for (let node of nodes) {
@@ -122,6 +169,7 @@ class Canvas extends Component {
         if (cubes.length > 0) {
           this.socket.emit('move', cubes[0])
         }
+
       }, 100)
     }
 
