@@ -13,6 +13,7 @@ class Slingshot {
     }
     shapes.push(toio)
 
+    /*
     let spring = {
       x: 0,
       y: 0,
@@ -23,6 +24,7 @@ class Slingshot {
       physics: 'spring'
     }
     shapes.push(spring)
+    */
 
     let balls = [
       { x: 700, y: 100},

@@ -199,10 +199,7 @@ class Physics extends Component {
     });
     Matter.Body.setPosition(bodyToAttach,{x:endPoint.x, y:endPoint.y}) // Body snaps to the constraint
 
-
-
-
-
+    console.log(bodyToAttach)
 
     if ( shapeType === 'line') {
       // TODO: need to change the attached body based on the intersected object
@@ -309,23 +306,27 @@ class Physics extends Component {
       })
 
     } else if(shapeType === 'spring'){
+      console.log(bodyToAttach)
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
         bodyB: bodyToAttach,
         render:{strokeStyle: 'red'},
         stiffness: 0.05
       })
+      console.log(constraint)
       let shotFlag = 0;
-      Matter.Events.on(this.engine,'afterUpdate',()=>{ // removes the bodyToAttach from the slingshot and adds a new one
-        let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
-        if (this.mouseConstraint.mouse.button ===-1 && shotFlag==0 && dist>4*bodyToAttach.circleRadius)
-        {
-          shotFlag=1;
-          bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , {density: 0.04});
-          Matter.Composite.add(this.engine.world, bodyToAttach);
-          constraint.bodyB = bodyToAttach;
-        }
-      })
+
+      setTimeout(() => {
+        Matter.Events.on(this.engine,'afterUpdate', () => { // removes the bodyToAttach from the slingshot and adds a new one
+          let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
+          if (this.mouseConstraint.mouse.button ===-1 && shotFlag==0 && dist>4*bodyToAttach.circleRadius) {
+            shotFlag=1;
+            bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , {density: 0.04});
+            Matter.Composite.add(this.engine.world, bodyToAttach);
+            constraint.bodyB = bodyToAttach;
+          }
+        })
+      }, 1000)
     }
 
     if (!constraint) return false

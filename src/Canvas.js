@@ -24,7 +24,6 @@ class Canvas extends Component {
     window.Canvas = this
     window.canvas = this
     this.state = {
-      mode: 'drawing',
       shapes: [],
       currentPoints: [],
       currentPaths: [],
@@ -256,7 +255,6 @@ class Canvas extends Component {
         }
       }
     }
-    shape.mode = this.state.mode
     return shape
   }
 
@@ -286,18 +284,6 @@ class Canvas extends Component {
         this.setState({ currentPaths: [], shapes: this.state.shapes })
       }
     })
-  }
-
-  changeMode(mode) {
-    this.setState({ mode: mode })
-  }
-
-  color(mode) {
-    return 'black'
-    if (mode === 'drawing') return 'red'
-    if (mode === 'emitter') return 'blue'
-    if (mode === 'motion') return 'purple'
-    return 'black'
   }
 
   onContextMenu(event) {
