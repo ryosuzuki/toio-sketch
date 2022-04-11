@@ -2,7 +2,6 @@ class Slingshot {
   init(canvas) {
     canvas.example = 'slingshot'
     let shapes = canvas.state.shapes
-    /*
 
     let toio = {  // for toio
       x: 200,
@@ -23,7 +22,7 @@ class Slingshot {
       physics: 'spring'
     }
     shapes.push(spring)
-    */
+
 
     let balls = [
       { x: 700, y: 100},

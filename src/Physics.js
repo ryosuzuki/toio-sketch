@@ -389,19 +389,18 @@ class Physics extends Component {
       this.bodyToAttach = bodyToAttach
       this.constraint = constraint
 
-      /*
+      
       setTimeout(() => {
         Matter.Events.on(this.engine, 'afterUpdate', () => { // removes the bodyToAttach from the slingshot and adds a new one
           let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
-          if (this.mouseConstraint.mouse.button === -1 && shotFlag === 0 && dist > 4*bodyToAttach.circleRadius) {
+          if (this.mouseConstraint.mouse.button === -1 && shotFlag === 0 && dist > 1*60 ) {
             shotFlag = 1
-            // bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , { density: 0.04 })
+            bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , { density: 0.04})
             // Matter.Composite.add(this.engine.world, bodyToAttach)
-            // constraint.bodyB = bodyToAttach
+            constraint.bodyB = bodyToAttach
           }
         })
       }, 1000)
-      */
     }
 
     if (!constraint) return false
