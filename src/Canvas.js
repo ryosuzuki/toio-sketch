@@ -46,8 +46,8 @@ class Canvas extends Component {
 
     // this.slingshot.init(this)
     // this.piston.init(this)
-    this.pong.init(this)
-    // this.newtonsCradle.init(this)
+    // this.pong.init(this)
+    this.newtonsCradle.init(this)
     // this.rubeGoldberg.init(this)
     // this.pinball.init(this)
     // this.rope.init(this)

@@ -171,6 +171,10 @@ class Physics extends Component {
     if (!body) return false
     body.id = id
     body.restitution = 1
+    if (canvas.example === 'newtons-cradle') {
+      body.friction = 0
+      body.frictionAir = 0
+    }
     Matter.Composite.add(this.engine.world, body)
     bodyIds.push(id)
     this.setState({ bodyIds: bodyIds })
@@ -226,6 +230,14 @@ class Physics extends Component {
       shapeType = 'linetwo'
       console.log(bodyToAttach2)
     }
+
+    if (bodyToAttach && bodyToAttach.id.includes('toio')) {
+      node.setAttr('stroke', App.toioStrokeColor)
+    }
+    if (bodyToAttach2 && bodyToAttach2.id.includes('toio')) {
+      node.setAttr('stroke', App.toioStrokeColor)
+    }
+
     if ( shapeType === 'line') {
       // TODO: need to change the attached body based on the intersected object
       constraint = Matter.Constraint.create({
