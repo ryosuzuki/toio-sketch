@@ -10,7 +10,7 @@ class App extends Component {
     window.App = this
 
     if (window.location.href.includes('localhost')) {
-      this.socket = io('http://localhost:4000')
+      // this.socket = io('http://localhost:4000')
     } else {
       this.socket = io('https://toio-sketch.tunnelto.dev')
     }
