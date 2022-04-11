@@ -8,9 +8,10 @@ import Transform from './Transform'
 import Spring from './Spring'
 
 import Slingshot from './examples/Slingshot'
+import Piston from './examples/Piston'
+import Pong from './examples/Pong'
 import NewtonsCradle from './examples/NewtonsCradle'
 import RubeGoldberg from './examples/RubeGoldberg'
-import Piston from './examples/Piston'
 import Pinball from './examples/Pinball'
 import Rope from './examples/Rope'
 import Slider from './examples/Slider'
@@ -35,21 +36,22 @@ class Canvas extends Component {
 
     // demos
     this.slingshot = new Slingshot()
+    this.piston = new Piston()
+    this.pong = new Pong()
     this.newtonsCradle = new NewtonsCradle()
     this.rubeGoldberg = new RubeGoldberg()
-    this.piston = new Piston()
     this.pinball = new Pinball()
     this.rope = new Rope()
     this.slider = new Slider()
 
-    // this.slingshot.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.slingshot.init(this)
+    // this.piston.init(this)
+    this.pong.init(this)
     // this.newtonsCradle.init(this)
     // this.rubeGoldberg.init(this)
-    this.piston.init(this)
     // this.pinball.init(this)
-    // this.pong.init(this)) //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.rope.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.slider.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.rope.init(this)
+    // this.slider.init(this)
   }
 
   componentDidMount() {
@@ -434,6 +436,8 @@ class Canvas extends Component {
               {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
                   if (shape.type === 'toio') {
+                    let width = shape.width ? shape.width : App.toioSize
+                    let height = shape.height ? shape.height : App.toioSize
                     return (
                       <Rect
                         key={ i }
@@ -443,11 +447,12 @@ class Canvas extends Component {
                         x={ shape.x }
                         y={ shape.y }
                         rotation={ shape.angle }
+                        angleFix={ shape.angleFix }
                         radius={ App.toioSize }
-                        width={ App.toioSize }
-                        height={ App.toioSize }
-                        offsetX={ App.toioSize/2 }
-                        offsetY={ App.toioSize/2 }
+                        width={ width }
+                        height={height }
+                        offsetX={ width/2 }
+                        offsetY={ height/2 }
                         strokeWidth={ App.strokeWidth }
                         stroke={ App.toioStrokeColor }
                         fill={ App.toioFillColorAlpha }

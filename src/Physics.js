@@ -232,7 +232,6 @@ class Physics extends Component {
         pointA: { x: startPoint.x, y: startPoint.y },
         bodyB: bodyToAttach
       })
-
       // Piston
       /*
       if (id === 0) {
@@ -361,10 +360,7 @@ class Physics extends Component {
     Matter.Composite.add(this.engine.world, constraint)
     constraintIds.push(id)
     this.setState({ constraintIds: constraintIds })
-
   }
-
-
 
   applyPhysics(node) {
     // console.log(node.getAttr('id'))
@@ -427,7 +423,12 @@ class Physics extends Component {
       let y = body.position.y
       let degree = body.angle * 180 / Math.PI
       node.setAttrs({ x: x, y: y })
-      node.rotation(degree)
+      let angleFix = node.getAttr('angleFix')
+      if (angleFix) {
+        node.rotation(0)
+      } else {
+        node.rotation(degree)
+      }
     }
   }
 
