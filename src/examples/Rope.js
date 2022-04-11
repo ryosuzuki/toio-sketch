@@ -3,7 +3,6 @@ class Rope {
     canvas.example = 'rope'
     let shapes = canvas.state.shapes
 
-    // disable gravity ----------uncomment line 49 in Physics.js
     let start = 100
     let offset = 40
     let ropeSize = 24;
@@ -32,7 +31,7 @@ class Rope {
       shapes.push(shape5)
     }
 
-    for(let i=0;i<ropeSize-1;i++){ // rope
+    for (let i = 0; i < ropeSize-1; i++){ // rope
       let shape7 = {
         x: 0,
         y: 0,

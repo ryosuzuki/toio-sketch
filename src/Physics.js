@@ -269,35 +269,54 @@ class Physics extends Component {
     })
     Matter.Body.setPosition(bodyToAttach, { x: endPoint.x, y: endPoint.y }) // Body snaps to the constraint
 
-    let bodyToAttach2 = null //  this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
-    offset = 50
-    for (let body of this.engine.world.bodies) {
-    // this.engine.world.bodies.forEach(body => {
-      // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
-      // if (!body.id.includes('toio')) continue
-      // if (body.isStatic) continue
-      if(body.bounds.max.x + offset > startPoint.x &&
-         body.bounds.min.x - offset < startPoint.x &&
-         body.bounds.max.y + offset > startPoint.y &&
-         body.bounds.min.y - offset < startPoint.y
-      ) {
-        bodyToAttach2 = body
+    let bodyToAttach2 = null
+
+    if (canvas.example === 'rope') {
+      bodyToAttach2 = this.engine.world.bodies[shapeId]
+      offset = 0
+      for (let body of this.engine.world.bodies) {
+        if(body.bounds.max.x + offset > startPoint.x &&
+           body.bounds.min.x - offset < startPoint.x &&
+           body.bounds.max.y + offset > startPoint.y &&
+           body.bounds.min.y - offset < startPoint.y
+        ) {
+          bodyToAttach2 = body
+        }
       }
     }
 
-    if (bodyToAttach2) {
-      node.id(`linetwo-${shapeId}`)
-      node.setAttr('physics', 'constrainttwo')
-      shapeType = 'linetwo'
-      console.log(bodyToAttach2)
+    if (canvas.example === 'piston') {
+      offset = 50
+      for (let body of this.engine.world.bodies) {
+      // this.engine.world.bodies.forEach(body => {
+        // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
+        // if (!body.id.includes('toio')) continue
+        // if (body.isStatic) continue
+        if(body.bounds.max.x + offset > startPoint.x &&
+           body.bounds.min.x - offset < startPoint.x &&
+           body.bounds.max.y + offset > startPoint.y &&
+           body.bounds.min.y - offset < startPoint.y
+        ) {
+          bodyToAttach2 = body
+        }
+      }
+
+      if (bodyToAttach2) {
+        node.id(`linetwo-${shapeId}`)
+        node.setAttr('physics', 'constrainttwo')
+        shapeType = 'linetwo'
+        console.log(bodyToAttach2)
+      }
+
+      if (bodyToAttach && bodyToAttach.id.includes('toio')) {
+        node.setAttr('stroke', App.toioStrokeColor)
+      }
+      if (bodyToAttach2 && bodyToAttach2.id.includes('toio')) {
+        node.setAttr('stroke', App.toioStrokeColor)
+      }
     }
 
-    if (bodyToAttach && bodyToAttach.id.includes('toio')) {
-      node.setAttr('stroke', App.toioStrokeColor)
-    }
-    if (bodyToAttach2 && bodyToAttach2.id.includes('toio')) {
-      node.setAttr('stroke', App.toioStrokeColor)
-    }
+    // let bodyToAttach2 = null //  this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
 
     if ( shapeType === 'line') {
       // TODO: need to change the attached body based on the intersected object
