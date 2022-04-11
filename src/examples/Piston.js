@@ -1,17 +1,47 @@
 class Piston {
   init(canvas) {
+    canvas.example = 'piston'
     let shapes = canvas.state.shapes
 
-    let shape1 = { //  joint
+    let toio1 = { //  joint
       x: 240,
       y: 300,
-      radius: 40,
-      type: 'circle',
-      physics: 'float',
-      visible: true
+      type: 'toio',
+      physics: 'float'
     }
-    shapes.push(shape1)
+    shapes.push(toio1)
 
+    let toio2 = { // for toio  // PISTON
+      x: 600,
+      y: 512,
+      type: 'toio',
+      physics: 'dynammic',
+    }
+    shapes.push(toio2)
+
+    let wall1 = { // wall
+      x: 700,
+      y: 512-55,
+      width: 400,
+      height: 50,
+      type: 'rect',
+      physics: 'static',
+      rotation: 0
+    }
+    shapes.push(wall1)
+
+    let wall2 = { // wall
+      x: 700,
+      y: 512+55,
+      width: 400,
+      height: 50,
+      type: 'rect',
+      physics: 'static',
+      rotation: 0
+    }
+    shapes.push(wall2)
+
+    /*
     let shape2 = { // crank
       x: 240,
       y: 512,
@@ -21,39 +51,6 @@ class Piston {
       visible: true
     }
     shapes.push(shape2)
-
-    let toio1 = { // for toio  // PISTON
-      x: 600,
-      y: 512,
-      width: App.toioSize,
-      height: App.toioSize,
-      type: 'rect',
-      physics: 'dynammic',
-      rotation: 0
-    }
-    shapes.push(toio1)
-
-    let shape5 = { // wall
-      x: 700,
-      y: 512-55,
-      width: 400,
-      height: 50,
-      type: 'rect',
-      physics: 'static',
-      rotation: 0
-    }
-    shapes.push(shape5)
-
-    let shape6 = { // wall
-      x: 700,
-      y: 512+55,
-      width: 400,
-      height: 50,
-      type: 'rect',
-      physics: 'static',
-      rotation: 0
-    }
-    shapes.push(shape6)
 
     let shape3 = {
       x: 0,
@@ -72,6 +69,7 @@ class Piston {
       physics: 'constrainttwo'
     }
     shapes.push(shape7)
+    */
 
     canvas.setState({ shapes: shapes })
   }

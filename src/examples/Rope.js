@@ -1,5 +1,6 @@
 class Rope {
   init(canvas) {
+    canvas.example = 'rope'
     let shapes = canvas.state.shapes
 
     // disable gravity ----------uncomment line 49 in Physics.js

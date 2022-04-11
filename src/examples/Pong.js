@@ -1,5 +1,6 @@
 class Pong {
   init(canvas) {
+    canvas.example = 'pong'
     let shapes = canvas.state.shapes
 
     //  disable gravity ----------uncomment line 49 in Physics.js

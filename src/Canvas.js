@@ -23,6 +23,7 @@ class Canvas extends Component {
     super(props)
     window.Canvas = this
     window.canvas = this
+    this.example = null
     this.state = {
       shapes: [],
       currentPoints: [],
@@ -31,6 +32,24 @@ class Canvas extends Component {
       event: {},
       menuPos: { x: -100, y: -100 }
     }
+
+    // demos
+    this.slingshot = new Slingshot()
+    this.newtonsCradle = new NewtonsCradle()
+    this.rubeGoldberg = new RubeGoldberg()
+    this.piston = new Piston()
+    this.pinball = new Pinball()
+    this.rope = new Rope()
+    this.slider = new Slider()
+
+    // this.slingshot.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.newtonsCradle.init(this)
+    // this.rubeGoldberg.init(this)
+    this.piston.init(this)
+    // this.pinball.init(this)
+    // this.pong.init(this)) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.rope.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
+    // this.slider.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
   }
 
   componentDidMount() {
@@ -106,23 +125,6 @@ class Canvas extends Component {
 
     this.stage = Konva.stages[0]
 
-    // demos
-    this.slingshot = new Slingshot()
-    this.newtonsCradle = new NewtonsCradle()
-    this.rubeGoldberg = new RubeGoldberg()
-    this.piston = new Piston()
-    this.pinball = new Pinball()
-    this.rope = new Rope()
-    this.slider = new Slider()
-
-    this.slingshot.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.newtonsCradle.init(this)
-    // this.rubeGoldberg.init(this)
-    // this.piston.init(this)
-    // this.pinball.init(this)
-    // this.pong.init(this)) //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.rope.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
-    // this.slider.init(this) //  disable gravity ----------uncomment line 49 in Physics.js
   }
 
   mouseDown(pos) {

@@ -46,7 +46,11 @@ class Physics extends Component {
       }
     })
     this.engine = engine
-    this.engine.gravity = {x: 0, y: 0}  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
+
+    if (['slingshot', 'pong', 'slider', 'rope'].includes(canvas.example)) {
+      this.engine.gravity = {x: 0, y: 0}  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
+    }
+
     this.runner = runner
     this.matterRender = render
 
@@ -181,8 +185,8 @@ class Physics extends Component {
     let points = node.getAttr('points')
     let constraint = null
 
-    let startPoint={x:points[0], y:points[1]}
-    let endPoint = {x:points[points.length-2], y:points[points.length-1]}
+    let startPoint = { x: points[0], y: points[1] }
+    let endPoint = { x: points[points.length-2], y: points[points.length-1] }
     // console.log(points.length);
 
     // getting bodyToAttach
@@ -190,20 +194,40 @@ class Physics extends Component {
     let shapeId = Number(node.id().split('-')[1])
     let bodyToAttach = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
 
-    this.engine.world.bodies.forEach(element => {
+    let offset = 10
+    this.engine.world.bodies.forEach(body => {
       // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
-      if(element.bounds.max.x > endPoint.x && element.bounds.min.x < endPoint.x && element.bounds.max.y > endPoint.y && element.bounds.min.y < endPoint.y )
-      {
-        bodyToAttach = element
+      if(body.bounds.max.x + offset > endPoint.x &&
+         body.bounds.min.x - offset < endPoint.x &&
+         body.bounds.max.y + offset > endPoint.y &&
+         body.bounds.min.y - offset < endPoint.y
+      ) {
+        bodyToAttach = body
       }
-    });
-    Matter.Body.setPosition(bodyToAttach,{x:endPoint.x, y:endPoint.y}) // Body snaps to the constraint
+    })
+    Matter.Body.setPosition(bodyToAttach, { x: endPoint.x, y: endPoint.y }) // Body snaps to the constraint
 
-    console.log(bodyToAttach)
+    let bodyToAttach2 = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
+    offset = 100
+    this.engine.world.bodies.forEach(body => {
+      // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
+      if(body.bounds.max.x + offset > startPoint.x &&
+         body.bounds.min.x - offset < startPoint.x &&
+         body.bounds.max.y + offset > startPoint.y &&
+         body.bounds.min.y - offset < startPoint.y
+      ) {
+        bodyToAttach2 = body
+      }
+    })
 
+    if (bodyToAttach2) {
+      node.id(`linetwo-${shapeId}`)
+      node.setAttr('physics', 'constrainttwo')
+      shapeType = 'linetwo'
+      console.log(bodyToAttach2)
+    }
     if ( shapeType === 'line') {
       // TODO: need to change the attached body based on the intersected object
-
       constraint = Matter.Constraint.create({
         pointA: { x: startPoint.x, y: startPoint.y },
         bodyB: bodyToAttach
@@ -268,19 +292,22 @@ class Physics extends Component {
       */
     }
     if ( shapeType === 'linetwo') {
-
       // adding nearest body to start point
-
+      /*
       let bodyToAttach2 = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
 
-      this.engine.world.bodies.forEach(element => {
+      this.engine.world.bodies.forEach(body => {
         // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
-        if(element.bounds.max.x > startPoint.x && element.bounds.min.x < startPoint.x && element.bounds.max.y > startPoint.y && element.bounds.min.y < startPoint.y )
-        {
-          bodyToAttach2 = element
+        let offset = 10
+        if(body.bounds.max.x + offset > startPoint.x &&
+           body.bounds.min.x - offset < startPoint.x &&
+           body.bounds.max.y + offset > startPoint.y &&
+           body.bounds.min.y - offset < startPoint.y) {
+          bodyToAttach2 = body
         }
-      });
-      Matter.Body.setPosition(bodyToAttach2,{x:startPoint.x, y:startPoint.y}) // Body snaps to the constraint
+      })
+      */
+      Matter.Body.setPosition(bodyToAttach2, { x: startPoint.x, y: startPoint.y }) // Body snaps to the constraint
 
       constraint = Matter.Constraint.create({
         bodyA: bodyToAttach2,

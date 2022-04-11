@@ -1,5 +1,6 @@
 class NewtonsCradle {
   init(canvas) {
+    canvas.example = 'newtons-cradle'
     let shapes = canvas.state.shapes
 
     let start = 360, offset = 90;

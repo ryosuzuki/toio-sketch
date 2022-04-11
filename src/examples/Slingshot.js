@@ -1,5 +1,6 @@
 class Slingshot {
   init(canvas) {
+    canvas.example = 'slingshot'
     let shapes = canvas.state.shapes
 
     // disable gravity ----------uncomment line 49 in Physics.js

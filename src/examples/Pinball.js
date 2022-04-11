@@ -1,5 +1,6 @@
 class Pinball {
   init(canvas) {
+    canvas.example = 'pinball'
     let shapes = canvas.state.shapes
 
     let xx = [510,      100,  1024-100,  330,                 700,              500, 700, 350]

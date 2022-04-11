@@ -1,5 +1,6 @@
 class Slider {
   init(canvas) {
+    canvas.example = 'slider'
     let shapes = canvas.state.shapes
 
     let xx = [400, 500, 600]

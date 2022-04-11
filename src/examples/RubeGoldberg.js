@@ -1,5 +1,6 @@
 class RubeGoldberg {
   init(canvas) {
+    canvas.example = 'rube-goldberg'
     let shapes = canvas.state.shapes
 
     let xx = [500, 700, 300, 900]
