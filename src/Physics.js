@@ -400,10 +400,18 @@ class Physics extends Component {
       */
       Matter.Body.setPosition(bodyToAttach2, { x: startPoint.x, y: startPoint.y }) // Body snaps to the constraint
 
-      constraint = Matter.Constraint.create({
-        bodyA: bodyToAttach2,
-        bodyB: bodyToAttach,
-      })
+      if (canvas.example === 'rope') {
+        constraint = Matter.Constraint.create({
+          bodyA: bodyToAttach2,
+          bodyB: bodyToAttach,
+          stiffness: 0.01
+        })
+      } else {
+        constraint = Matter.Constraint.create({
+          bodyA: bodyToAttach2,
+          bodyB: bodyToAttach,
+        })
+      }
 
     } else if ( shapeType === 'lineelastic') { //super elastic constraint for InSitu TUI
       constraint = Matter.Constraint.create({

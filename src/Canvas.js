@@ -32,7 +32,7 @@ class Canvas extends Component {
       currentPaths: [],
       currentId: -1,
       event: {},
-      menuPos: { x: -100, y: -100 }
+      menuPos: { x: -300, y: -300 }
     }
 
     this.pressed = []
@@ -95,6 +95,9 @@ class Canvas extends Component {
           shape.physics = 'dynamic'
         }
         if (this.example === 'pinball') {
+          shape.physics = 'dynamic'
+        }
+        if (this.example === 'rope') {
           shape.physics = 'dynamic'
         }
         let shapeId = _.findIndex(shapes, { 'toioId': id })
@@ -417,13 +420,22 @@ class Canvas extends Component {
   onGravityClick() {
     let shapes = this.state.shapes
     shapes[this.state.currentId].physics = 'dynamic'
-    this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
+    this.setState({ shapes: shapes, menuPos: { x: -300, y: -300 } })
   }
 
   onStaticClick() {
     let shapes = this.state.shapes
     shapes[this.state.currentId].physics = 'static'
-    this.setState({ shapes: shapes, menuPos: { x: -100, y: -100 } })
+    this.setState({ shapes: shapes, menuPos: { x: -300, y: -300 } })
+  }
+
+  onElasticClick() {
+    let shapes = this.state.shapes
+    let line = shapes.pop()
+    // let anchor = shapes.pop()
+    this.setState({ shapes: shapes })
+    this.rope.show(this, line)
+    this.setState({ menuPos: { x: -300, y: -300 } })
   }
 
   onMouseDown() {
@@ -497,6 +509,33 @@ class Canvas extends Component {
                   onClick={ this.onStaticClick.bind(this) }
                   onTap={ this.onStaticClick.bind(this) }
                 />
+                { this.example === 'rope' &&
+                  <>
+                    <Rect
+                      x={ 0 }
+                      y={ 100 }
+                      width={ 200 }
+                      height={ 50 }
+                      fill={ '#eee' }
+                    />
+                    <Text
+                      x={ 0 }
+                      y={ 100 }
+                      width={ 200 }
+                      height={ 50 }
+                      text={ 'Elastic' }
+                      fontSize={30}
+                      align={ 'center' }
+                      verticalAlign={ 'middle' }
+                      onClick={ this.onElasticClick.bind(this) }
+                      onTap={ this.onElasticClick.bind(this) }
+                    />
+
+
+                  </>
+                }
+
+
               </Group>
               {/* Transform Path */}
               <Group>
