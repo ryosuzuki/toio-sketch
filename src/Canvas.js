@@ -47,10 +47,10 @@ class Canvas extends Component {
     this.rope = new Rope()
     this.slider = new Slider()
 
-    this.slingshot.init(this)
+    // this.slingshot.init(this)
     // this.piston.init(this)
     // this.newtonsCradle.init(this)
-    // this.pong.init(this)
+    this.pong.init(this)
     // this.pinball.init(this)
     // this.rubeGoldberg.init(this)
     // this.rope.init(this)
@@ -548,7 +548,7 @@ class Canvas extends Component {
                         x={ shape.x }
                         y={ shape.y }
                         rotation={ shape.angle }
-                        angleFix={ shape.angleFix }
+                        angleFix={ true } // For pong
                         radius={ 40 }
                         width={ width }
                         height={height }

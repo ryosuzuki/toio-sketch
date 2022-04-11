@@ -1,6 +1,6 @@
 const { NearScanner } = require('@toio/scanner')
 const { NearestScanner } = require('@toio/scanner')
-let num = 1
+let num = 2
 
 class Toio {
   constructor() {

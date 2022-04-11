@@ -71,9 +71,20 @@ class Physics extends Component {
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
 
     Matter.Events.on(engine, 'beforeUpdate', () => {
-      let maxSpeed = 5
       let bodies = this.engine.world.bodies
       for (let body of bodies) {
+
+        // For pong
+        let maxSpeed = 2.5
+        let id = body.id
+        if (id.includes('toio')) {
+          body.mass = 1000
+        }
+        body.restitution = 1
+
+        // For slingshot
+        // let maxSpeed = 5
+
         if (body.velocity.x > maxSpeed) {
           Matter.Body.setVelocity(body, { x: maxSpeed, y: body.velocity.y })
         }
