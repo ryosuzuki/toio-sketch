@@ -70,6 +70,25 @@ class Physics extends Component {
     Matter.Runner.run(runner, engine)
     Matter.Events.on(engine, 'afterUpdate', this.afterUpdate.bind(this))
 
+    Matter.Events.on(engine, 'beforeUpdate', () => {
+      let maxSpeed = 5
+      let bodies = this.engine.world.bodies
+      for (let body of bodies) {
+        if (body.velocity.x > maxSpeed) {
+          Matter.Body.setVelocity(body, { x: maxSpeed, y: body.velocity.y })
+        }
+        if (body.velocity.x < -maxSpeed) {
+          Matter.Body.setVelocity(body, { x: -maxSpeed, y: body.velocity.y })
+        }
+        if (body.velocity.y > maxSpeed) {
+          Matter.Body.setVelocity(body, { x: body.velocity.x, y: maxSpeed })
+        }
+        if (body.velocity.y < -maxSpeed) {
+          Matter.Body.setVelocity(body, { x: body.velocity.x, y: -maxSpeed })
+        }
+      }
+    })
+
     // this.showBox()
     // this.showChain()
 
@@ -389,7 +408,7 @@ class Physics extends Component {
       this.bodyToAttach = bodyToAttach
       this.constraint = constraint
 
-      
+
       setTimeout(() => {
         Matter.Events.on(this.engine, 'afterUpdate', () => { // removes the bodyToAttach from the slingshot and adds a new one
           let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)

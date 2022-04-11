@@ -1,6 +1,6 @@
 const { NearScanner } = require('@toio/scanner')
 const { NearestScanner } = require('@toio/scanner')
-let num = 2
+let num = 1
 
 class Toio {
   constructor() {
@@ -68,6 +68,11 @@ class Toio {
     const diffX = target.x - cube.x
     const diffY = target.y - cube.y
     const distance = Math.sqrt(diffX ** 2 + diffY ** 2)
+
+    if (distance < 10) {
+      this.targets[i] = { x: null, y: null, angle: null }
+      return [0, 0]
+    }
 
     let leftSpeed = 0
     let rightSpeed = 0

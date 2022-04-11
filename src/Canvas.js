@@ -47,7 +47,7 @@ class Canvas extends Component {
     this.rope = new Rope()
     this.slider = new Slider()
 
-    // this.slingshot.init(this)
+    this.slingshot.init(this)
     // this.piston.init(this)
     // this.newtonsCradle.init(this)
     // this.pong.init(this)
