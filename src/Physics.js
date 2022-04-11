@@ -239,10 +239,13 @@ class Physics extends Component {
     })
     Matter.Body.setPosition(bodyToAttach, { x: endPoint.x, y: endPoint.y }) // Body snaps to the constraint
 
-    let bodyToAttach2 = this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
+    let bodyToAttach2 = null //  this.engine.world.bodies[shapeId] // is replaced with body draw before the contraint and which intersects the constraint
     offset = 50
-    this.engine.world.bodies.forEach(body => {
+    for (let body of this.engine.world.bodies) {
+    // this.engine.world.bodies.forEach(body => {
       // console.debug(element.id, typeof(element.bounds.max.x),  typeof(points[2]), element.bounds.min.x, points[2],  Math.floor(element.bounds.max.x) >  Math.floor(points[2]) , element.bounds.min.x > points[2] , element.bounds.max.y,  points[3], element.bounds.min.y, points[3] )
+      // if (!body.id.includes('toio')) continue
+      // if (body.isStatic) continue
       if(body.bounds.max.x + offset > startPoint.x &&
          body.bounds.min.x - offset < startPoint.x &&
          body.bounds.max.y + offset > startPoint.y &&
@@ -250,7 +253,7 @@ class Physics extends Component {
       ) {
         bodyToAttach2 = body
       }
-    })
+    }
 
     if (bodyToAttach2) {
       node.id(`linetwo-${shapeId}`)
@@ -382,17 +385,23 @@ class Physics extends Component {
       console.log(constraint)
       let shotFlag = 0;
 
-      // setTimeout(() => {
+      this.endPoint = endPoint
+      this.bodyToAttach = bodyToAttach
+      this.constraint = constraint
+
+      /*
+      setTimeout(() => {
         Matter.Events.on(this.engine, 'afterUpdate', () => { // removes the bodyToAttach from the slingshot and adds a new one
           let dist = Math.sqrt((endPoint.x - bodyToAttach.position.x)**2 + (endPoint.y - bodyToAttach.position.y)**2)
           if (this.mouseConstraint.mouse.button === -1 && shotFlag === 0 && dist > 4*bodyToAttach.circleRadius) {
             shotFlag = 1
-            bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , { density: 0.04 })
-            Matter.Composite.add(this.engine.world, bodyToAttach)
-            constraint.bodyB = bodyToAttach
+            // bodyToAttach = Matter.Bodies.polygon(endPoint.x, endPoint.y, 4, 20 , { density: 0.04 })
+            // Matter.Composite.add(this.engine.world, bodyToAttach)
+            // constraint.bodyB = bodyToAttach
           }
         })
-      // }, 1000)
+      }, 1000)
+      */
     }
 
     if (!constraint) return false
@@ -400,6 +409,12 @@ class Physics extends Component {
     Matter.Composite.add(this.engine.world, constraint)
     constraintIds.push(id)
     this.setState({ constraintIds: constraintIds })
+  }
+
+  shot() {
+    this.bodyToAttach = Matter.Bodies.polygon(this.endPoint.x, this.endPoint.y, 4, 20 , { density: 0.04 })
+    Matter.Composite.add(this.engine.world, this.bodyToAttach)
+    this.constraint.bodyB = this.bodyToAttach
   }
 
   applyPhysics(node) {

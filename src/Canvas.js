@@ -100,6 +100,7 @@ class Canvas extends Component {
         let shapeId = _.findIndex(shapes, { 'toioId': id })
 
         let toios = this.state.toios
+        /*
         if (!toios[id]) {
           toios.push({
             x: shape.x,
@@ -115,6 +116,7 @@ class Canvas extends Component {
             pressed: false,
           }
         }
+        */
 
         if (shapeId < 0) {
           shapes.push(shape)
@@ -184,6 +186,10 @@ class Canvas extends Component {
             pageY: y,
           })
           this.physics.mouseEvent(event)
+
+          if (this.example === 'slingshot') {
+            this.physics.shot()
+          }
         }
       })
 
@@ -514,7 +520,7 @@ class Canvas extends Component {
                       x={ toio.x }
                       y={ toio.y }
                       rotation={ toio.angle }
-                      radius={ App.toioSize }
+                      radius={ 40 }
                       width={ App.toioSize }
                       height={ App.toioSize }
                       offsetX={ App.toioSize/2 }
@@ -543,19 +549,37 @@ class Canvas extends Component {
                         y={ shape.y }
                         rotation={ shape.angle }
                         angleFix={ shape.angleFix }
-                        radius={ App.toioSize }
+                        radius={ 40 }
                         width={ width }
                         height={height }
                         offsetX={ width/2 }
                         offsetY={ height/2 }
-                        // strokeWidth={ App.strokeWidth }
-                        // stroke={ App.toioStrokeColor }
-                        fill={ 'rgba(54, 40, 0, 0.01)' }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.toioStrokeColor }
+                        fill={ App.toioFillColorAlpha }
+                        // fill={ 'rgba(54, 40, 0, 0.01)' }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }
                       />
                     )
+                      {/*
+                      <Circle
+                        key={ i }
+                        id={ `toio-${i}` }
+                        name={ `toio-${i}` }
+                        physics={ shape.physics }
+                        x={ shape.x }
+                        y={ shape.y }
+                        radius={ 40 }
+                        strokeWidth={ App.strokeWidth }
+                        stroke={ App.toioStrokeColor }
+                        fill={ App.toioFillColorAlpha }
+                        draggable
+                        onClick={ this.onShapeClick.bind(this, i) }
+                        onTap={ this.onShapeClick.bind(this, i) }
+                      />
+                      */}
                   }
                   if (shape.type === 'rect') {
                     return (

@@ -1,6 +1,6 @@
 const { NearScanner } = require('@toio/scanner')
 const { NearestScanner } = require('@toio/scanner')
-let num = 1
+let num = 2
 
 class Toio {
   constructor() {
@@ -98,8 +98,8 @@ class Toio {
       }
     }
 
-    let targetVelX = target.vx
-    let targetVelY = target.vy
+    let targetVelX = 0 // target.vx
+    let targetVelY = 0 // target.vy
     let velIntegrate = Math.sqrt(targetVelX**2 + targetVelY**2)
     let aimMotSpeed = velIntegrate / 2.04
 

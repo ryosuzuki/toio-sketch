@@ -8,8 +8,12 @@ class App extends Component {
     super(props)
     window.app = this
     window.App = this
-    // this.socket = io('http://localhost:4000')
-    this.socket = io('https://toio-sketch.tunnelto.dev')
+
+    if (window.location.href.includes('localhost')) {
+      this.socket = io('http://localhost:4000')
+    } else {
+      this.socket = io('https://toio-sketch.tunnelto.dev')
+    }
 
     this.size = 1024
     this.state = {
