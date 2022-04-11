@@ -5,14 +5,14 @@ let num = 2
 class Toio {
   constructor() {
     // cube = null
-    this.targetX = 250
-    this.targetY = 250
+    // this.targetX = 250
+    // this.targetY = 250
 
     this.targets = []
     this.cubes = []
     for (let i = 0; i < num; i++) {
       this.cubes.push({})
-      this.targets.push({})
+      this.targets.push({ x: null, y: null, angle: null })
     }
     this.speed = {}
     // this.ids = ids
@@ -23,9 +23,17 @@ class Toio {
       console.log('connected')
 
       socket.on('move', (data) => {
-        console.log(data)
-        this.targetX = data.x
-        this.targetY = data.y
+        let target = data
+        console.log(target)
+        if (!target.x || !target.y) return false
+        this.targets[target.id] = target
+        // for (let i = 0; i < targets.length; i++) {
+        //   let target = targets[i]
+        //   if (!target.x || !target.y) continue
+        //   this.targets[i] = target
+        // }
+        // this.targetX = data.x
+        // this.targetY = data.y
       })
     })
 
@@ -45,40 +53,44 @@ class Toio {
     }
     console.log('toio connected')
 
-    for (let cube of this.cubes) {
+    for (let i = 0; i < this.cubes.length; i++) {
+      let cube = this.cubes[i]
       cube.on('id:position-id', (data) => {
         cube.x = data.x
         cube.y = data.y
         cube.angle = data.angle
-        let cubes = this.cubes.map((e) => {
-          return { id: e.id, numId: e.numId, x: e.x, y: e.y, angle: e.angle }
-        })
-        this.io.sockets.emit('pos', { cubes: cubes })
+        data.id = i
+        this.io.sockets.emit('pos', data)
       })
-
       cube.on('button:press', (data) => {
-        console.log(data)
+        data.id = i
         this.io.sockets.emit('button', data)
       })
-
     }
-
     setInterval(() => {
-      // console.log(this.targetX)
+      // console.log(this.targets)
+      for (let i = 0; i < this.cubes.length; i++) {
+        let cube = this.cubes[i]
+        let target = this.targets[i]
+        if (!target.x || !target.y) continue
+        cube.move(...this.move(i, cube), 100)
+      }
+      /*
       for (let cube of this.cubes) {
         if (!this.targetX || !this.targetY) continue
         cube.move(...this.move(this.targetX, this.targetY, cube), 100)
       }
+      */
     }, 10)
   }
 
-  move(targetX, targetY, cube) {
-    const diffX = targetX - cube.x
-    const diffY = targetY - cube.y
+  move(i, cube) {
+    let target = this.targets[i]
+    const diffX = target.x - cube.x
+    const diffY = target.y - cube.y
     const distance = Math.sqrt(diffX ** 2 + diffY ** 2)
     if (distance < 10) {
-      this.targetX = null
-      this.targetY = null
+      this.targets[i] = { x: null, y: null, angle: null }
       return [0, 0]
     }
 

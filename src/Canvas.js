@@ -34,7 +34,7 @@ class Canvas extends Component {
       menuPos: { x: -100, y: -100 }
     }
 
-    this.pressed = false
+    this.pressed = []
 
     // demos
     this.slingshot = new Slingshot()
@@ -76,57 +76,77 @@ class Canvas extends Component {
       this.setState({ shapes: shapes})
       */
     } else {
-      this.socket.on('pos', (message) => {
-        let cubes = message.cubes
-        this.cubes = cubes
-
+      this.cubes = []
+      this.socket.on('pos', (data) => {
         let shapes = this.state.shapes
-        for (let id = 0; id < cubes.length; id++) {
-          let cube = cubes[id]
-          let shape = {
-            x: 1024 * ((cube.x - 45) / (455 - 45)),
-            y: 1024 * ((cube.y - 45) / (455 - 45)),
-            rotation: cube.angle,
-            type: 'toio',
-            physics: 'float',
-            toioId: id
-          }
-          if (this.example === 'slingshot') {
-            toio.physics = 'dynamic'
-          }
-          let shapeId = _.findIndex(shapes, { 'toioId': id })
-          if (shapeId < 0) {
-            shapes.push(shape)
-          } else {
-            if (this.pressed) {
-              let toio = shapes[shapeId]
-              toio.x = shape.x
-              toio.y = shape.y
-              toio.rotation = shape.rotation
-              shapes[shapeId] = toio
+
+        let cube = data
+        let id = cube.id
+        let shape = {
+          x: 1024 * ((cube.x - 45) / (455 - 45)),
+          y: 1024 * ((cube.y - 45) / (455 - 45)),
+          rotation: cube.angle,
+          type: 'toio',
+          physics: 'float',
+          toioId: cube.id
+        }
+        if (this.example === 'slingshot') {
+          shape.physics = 'dynamic'
+        }
+        let shapeId = _.findIndex(shapes, { 'toioId': id })
+        if (shapeId < 0) {
+          shapes.push(shape)
+          this.cubes.push({
+            x: shape.x,
+            y: shape.y,
+            angle: shape.rotation,
+            pressed: false,
+          })
+        } else {
+          if (this.cubes[id].pressed) {
+            let target = {
+              id: id,
+              x: data.x,
+              y: data.y,
+              angle: data.angle
             }
+            this.socket.emit('move', target)
+            let x = 1024 * ((data.x - 45) / (455 - 45))
+            let y = 1024 * ((data.y - 45) / (455 - 45))
+            let event = new MouseEvent('mousemove' , {
+              clientX: x,
+              clientY: y,
+              pageX: x,
+              pageY: y,
+            })
+            this.physics.mouseEvent(event)
+          }
+          let cube = this.cubes[id]
+          console.log(cube)
+          if (cube && cube.pressed) {
+            let toio = shapes[shapeId]
+            toio.x = shape.x
+            toio.y = shape.y
+            toio.rotation = shape.rotation
+            shapes[shapeId] = toio
           }
         }
         this.setState({ shapes: shapes})
-        if (this.pressed) {
-          this.socket.emit('move', cubes[0])
-          let x = 1024 * ((this.cubes[0].x - 45) / (455 - 45))
-          let y = 1024 * ((this.cubes[0].y - 45) / (455 - 45))
-          let event = new MouseEvent('mousemove' , {
-            clientX: x,
-            clientY: y,
-            pageX: x,
-            pageY: y,
-          })
-          this.physics.mouseEvent(event)
-        }
+
+        // for (let i = 0; i < this.cubes.length; i++) {
+        //   let cube = this.cubes[i]
+        //   if (cube.pressed) {
+        //   }
+        // }
       })
 
       this.socket.on('button', (data) => {
         console.log(data)
-        this.pressed = data.pressed
-        let x = 1024 * ((this.cubes[0].x - 45) / (455 - 45))
-        let y = 1024 * ((this.cubes[0].y - 45) / (455 - 45))
+        let id = data.id
+        this.cubes[id].pressed = data.pressed
+        // this.pressed = data.pressed
+        let x = 1024 * ((this.cubes[id].x - 45) / (455 - 45))
+        let y = 1024 * ((this.cubes[id].y - 45) / (455 - 45))
         if (data.pressed) {
           let event = new MouseEvent('mousedown' , {
             clientX: x,
@@ -147,29 +167,34 @@ class Canvas extends Component {
       })
 
       setInterval(() => {
-        if (this.pressed) {
-          console.log('pressed')
-          return false
-        }
+        // if (this.pressed) {
+        //   console.log('pressed')
+        //   return false
+        // }
         let nodes = canvas.layer.children
         let cubes = []
+        let i = 0
         for (let node of nodes) {
           let id = node.getAttr('id')
           if (!id.includes('toio')) continue
 
+          let cube = this.cubes[i]
+          if (cube.pressed) {
+            i++
+            continue
+          }
           let x = node.getAttr('x')
           let y = node.getAttr('y')
           let angle = node.getAttr('rotation')
-          cubes.push({
+          let target = {
+            id: i,
             x: x / 1024 * (455 - 45) + 45,
             y: y / 1024 * (455 - 45) + 45,
             angle: angle,
-          })
+          }
+          this.socket.emit('move', target)
+          i++
         }
-        if (cubes.length > 0) {
-          this.socket.emit('move', cubes[0])
-        }
-
       }, 100)
     }
 
