@@ -11,28 +11,54 @@ class Pinball {
     let pp = [ 'static', 'static', 'static', 'float', 'float', 'static', 'static', 'static']
     let objType = [ 'shape', 'shape', 'shape', 'toio', 'toio', 'shape', 'shape', 'shape']
 
-    for (let i = 0; i < xx.length; i++) {
+    let walls = [
+      { x: 510, y: 125, width: 1024-150, height: 50 },
+      { x: 100, y: 550, width: 50, height: 800 },
+      { x: 1024-100, y: 550, width: 50, height: 800 }
+    ]
+
+    for (let wall of walls) {
       let shape = {
-        x: xx[i],
-        y: yy[i],
-        width: ww[i],
-        height: hh[i],
-        rotation: rr[i],
+        x: wall.x,
+        y: wall.y,
+        width: wall.width,
+        height: wall.height,
         type: 'rect',
-        physics: pp[i]
+        physics: 'static',
       }
       shapes.push(shape)
     }
 
-    let shape = {
+    let ball = {
       x: 500,
       y: 500,
       radius: 50,
       type: 'circle',
-      physics: 'dynamic',
-      visible: true
+      physics: 'float'
     }
-    shapes.push(shape)
+    shapes.push(ball)
+
+    let toio1 = { // paddle R
+      x: 650,
+      y: 900,
+      width: App.toioSize*4,
+      type: 'toio',
+      physics: 'float',
+    }
+    shapes.push(toio1)
+
+    let toio2 = { // paddle L
+      x: 400,
+      y: 900,
+      width: App.toioSize*4,
+      type: 'toio',
+      physics: 'float',
+    }
+    shapes.push(toio2)
+
+
+
+
 
     canvas.setState({ shapes: shapes })
   }

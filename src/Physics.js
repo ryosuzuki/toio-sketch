@@ -175,6 +175,24 @@ class Physics extends Component {
       body.friction = 0
       body.frictionAir = 0
     }
+    console.log(id)
+    if (canvas.example === 'rube-goldberg') {
+      if (id.includes('toio-2')) {
+        body.friction = 0
+      }
+      if (id.includes('toio-3')) {
+        Matter.Body.setDensity(body, 1000)
+        Matter.Body.setMass(body, 1000)
+        // body.friction = 0
+        // body.frictionStatic = 0
+      }
+      if (id.includes('rect-1')) {
+        body.friction = 1
+        body.frictionStatic = 1
+      }
+    }
+
+
     Matter.Composite.add(this.engine.world, body)
     bodyIds.push(id)
     this.setState({ bodyIds: bodyIds })

@@ -3,36 +3,45 @@ class RubeGoldberg {
     canvas.example = 'rube-goldberg'
     let shapes = canvas.state.shapes
 
-    let xx = [500, 700, 300, 900]
-    let yy = [350, 800, 100, 600]
-    let ww = [600, 600,  50,  50]
-    let hh = [ 50,  50,  50,  50]
-    let rr = [ 2, -10,  5, -5]
-    let pp = [ 'static', 'static',  'dynamic', 'dynamic']
-    let objType = [ 'shape', 'shape',  'toio', 'toio']
-
-    for (let i = 0; i < xx.length; i++) {
-      let shape1 = {
-        x: xx[i],
-        y: yy[i],
-        width: ww[i],
-        height: hh[i],
-        rotation: rr[i],
+    let slopes = [
+      { x: 500, y: 350, width: 600, height: 50, angle: 2},
+      { x: 650, y: 800, width: 600, height: 50, angle: -2},
+    ]
+    for (let slope of slopes) {
+      let shape = {
+        x: slope.x,
+        y: slope.y,
+        width: slope.width,
+        height: slope.height,
+        rotation: slope.angle,
         type: 'rect',
-        physics: pp[i]
+        physics: 'static'
       }
-      shapes.push(shape1)
+      shapes.push(shape)
     }
 
-    let shape2 = {
+    let toios = [
+      { x: 300, y: 100 },
+      { x: 900, y: 700 }
+    ]
+    for (let toio of toios) {
+      let shape = {
+        x: toio.x,
+        y: toio.y,
+        type: 'toio',
+        physics: 'dynamic'
+      }
+      shapes.push(shape)
+    }
+
+    let ball = {
       x: 700,
       y: 200,
       radius: 40,
       type: 'circle',
-      physics: 'dynamic',
-      visible: true
+      physics: 'dynamic'
     }
-    shapes.push(shape2)
+    shapes.push(ball)
 
     canvas.setState({ shapes: shapes })
   }

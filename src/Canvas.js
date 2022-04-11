@@ -47,9 +47,9 @@ class Canvas extends Component {
     // this.slingshot.init(this)
     // this.piston.init(this)
     // this.pong.init(this)
-    this.newtonsCradle.init(this)
-    // this.rubeGoldberg.init(this)
+    // this.newtonsCradle.init(this)
     // this.pinball.init(this)
+    this.rubeGoldberg.init(this)
     // this.rope.init(this)
     // this.slider.init(this)
   }
@@ -407,32 +407,6 @@ class Canvas extends Component {
                   )
                 }) }
               </Group>
-              {/* Toio */}
-              {/*
-              { this.state.toios.map((toio, i) => {
-                return (
-                  <Rect
-                    key={ i }
-                    id={ `toio-${i}` }
-                    name={ `toio-${i}` }
-                    physics={ 'float' }
-                    x={ toio.x }
-                    y={ toio.y }
-                    rotation={ toio.angle }
-                    radius={ App.toioSize }
-                    width={ App.toioSize }
-                    height={ App.toioSize }
-                    offsetX={ App.toioSize/2 }
-                    offsetY={ App.toioSize/2 }
-                    strokeWidth={ App.strokeWidth }
-                    stroke={ App.toioStrokeColor }
-                    fill={ App.toioFillColorAlpha }
-                    draggable
-                    onClick={ this.onToioClick.bind(this, i) }
-                    onTap={ this.onToioClick.bind(this, i) }
-                  />
-                )
-              })}*/}
               {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
                   if (shape.type === 'toio') {
