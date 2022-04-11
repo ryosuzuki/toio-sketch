@@ -26,6 +26,7 @@ class Canvas extends Component {
     window.canvas = this
     this.example = null
     this.state = {
+      toios: [],
       shapes: [],
       currentPoints: [],
       currentPaths: [],
@@ -47,9 +48,9 @@ class Canvas extends Component {
     this.slider = new Slider()
 
     // this.slingshot.init(this)
-    this.piston.init(this)
-    // this.pong.init(this)
+    // this.piston.init(this)
     // this.newtonsCradle.init(this)
+    // this.pong.init(this)
     // this.pinball.init(this)
     // this.rubeGoldberg.init(this)
     // this.rope.init(this)
@@ -93,7 +94,28 @@ class Canvas extends Component {
         if (this.example === 'slingshot') {
           shape.physics = 'dynamic'
         }
+        if (this.example === 'pinball') {
+          shape.physics = 'dynamic'
+        }
         let shapeId = _.findIndex(shapes, { 'toioId': id })
+
+        let toios = this.state.toios
+        if (!toios[id]) {
+          toios.push({
+            x: shape.x,
+            y: shape.y,
+            angle: shape.rotation,
+            pressed: false,
+          })
+        } else {
+          toios[id] = {
+            x: shape.x + 5,
+            y: shape.y - App.toioSize/2,
+            angle: shape.rotation,
+            pressed: false,
+          }
+        }
+
         if (shapeId < 0) {
           shapes.push(shape)
           this.cubes.push({
@@ -122,7 +144,6 @@ class Canvas extends Component {
             this.physics.mouseEvent(event)
           }
           let cube = this.cubes[id]
-          console.log(cube)
           if (cube && cube.pressed) {
             let toio = shapes[shapeId]
             toio.x = shape.x
@@ -185,17 +206,21 @@ class Canvas extends Component {
           }
           let x = node.getAttr('x')
           let y = node.getAttr('y')
+          let vx = node.getAttr('vx')
+          let vy = node.getAttr('vy')
           let angle = node.getAttr('rotation')
           let target = {
             id: i,
             x: x / 1024 * (455 - 45) + 45,
             y: y / 1024 * (455 - 45) + 45,
             angle: angle,
+            vx: vx,
+            vy: vy,
           }
           this.socket.emit('move', target)
           i++
         }
-      }, 100)
+      }, 10)
     }
 
     this.stage = Konva.stages[0]
@@ -480,6 +505,29 @@ class Canvas extends Component {
                   )
                 }) }
               </Group>
+              { this.state.toios.map((toio, i) => {
+                  return (
+                    <Rect
+                      key={ i }
+                      id={ `cube-${i}` }
+                      name={ `cube-${i}` }
+                      x={ toio.x }
+                      y={ toio.y }
+                      rotation={ toio.angle }
+                      radius={ App.toioSize }
+                      width={ App.toioSize }
+                      height={ App.toioSize }
+                      offsetX={ App.toioSize/2 }
+                      offsetY={ App.toioSize/2 }
+                      strokeWidth={ App.strokeWidth }
+                      stroke={ App.toioStrokeColor }
+                      fill={ App.toioFillColorAlpha }
+                      draggable
+                      onClick={ this.onShapeClick.bind(this, i) }
+                      onTap={ this.onShapeClick.bind(this, i) }
+                    />
+                  )
+              }) }
               {/* All Sketched Shapes */}
               { this.state.shapes.map((shape, i) => {
                   if (shape.type === 'toio') {
@@ -500,9 +548,9 @@ class Canvas extends Component {
                         height={height }
                         offsetX={ width/2 }
                         offsetY={ height/2 }
-                        strokeWidth={ App.strokeWidth }
-                        stroke={ App.toioStrokeColor }
-                        fill={ App.toioFillColorAlpha }
+                        // strokeWidth={ App.strokeWidth }
+                        // stroke={ App.toioStrokeColor }
+                        fill={ 'rgba(54, 40, 0, 0.01)' }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }

@@ -3,6 +3,7 @@ class Pong {
     canvas.example = 'pong'
     let shapes = canvas.state.shapes
 
+    /*
     let toio1 = { // paddle R
       x: 900,
       y: 650,
@@ -22,7 +23,9 @@ class Pong {
       angleFix: true,
     }
     shapes.push(toio2)
+    */
 
+    /*
     let toio = { // toio ball
       x: 600,
       y: 600,
@@ -30,9 +33,10 @@ class Pong {
       physics: 'dynamic',
     }
     shapes.push(toio)
+    */
 
     let ball = { // virtual ball
-      x: 400,
+      x: 150,
       y: 400,
       radius: 50,
       type: 'circle',

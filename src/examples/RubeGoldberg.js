@@ -20,6 +20,7 @@ class RubeGoldberg {
       shapes.push(shape)
     }
 
+    /*
     let toios = [
       { x: 300, y: 100 },
       { x: 900, y: 700 }
@@ -33,6 +34,7 @@ class RubeGoldberg {
       }
       shapes.push(shape)
     }
+    */
 
     let ball = {
       x: 700,

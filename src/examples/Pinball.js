@@ -34,10 +34,11 @@ class Pinball {
       y: 500,
       radius: 50,
       type: 'circle',
-      physics: 'float'
+      physics: 'dynamic'
     }
     shapes.push(ball)
 
+    /*
     let toio1 = { // paddle R
       x: 650,
       y: 900,
@@ -55,6 +56,7 @@ class Pinball {
       physics: 'float',
     }
     shapes.push(toio2)
+    */
 
 
 

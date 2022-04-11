@@ -47,7 +47,7 @@ class Physics extends Component {
     })
     this.engine = engine
 
-    if (['slingshot', 'pong', 'slider', 'rope'].includes(canvas.example)) {
+    if (['slingshot', 'pong', 'slider', 'pinball', 'rope'].includes(canvas.example)) {
       this.engine.gravity = { x: 0, y: 0 }  // uncomment to disable gravity for slingshot, pong, insituTUI & rope  example
     }
 
@@ -171,25 +171,35 @@ class Physics extends Component {
     if (!body) return false
     body.id = id
     body.restitution = 1
+    // body.friction = 0
+    // body.frictionAir = 0
     if (canvas.example === 'newtons-cradle') {
       body.friction = 0
       body.frictionAir = 0
     }
+    if (canvas.example === 'pong') {
+      body.friction = 0
+      body.frictionAir = 0
+    }
+    if (canvas.example === 'pinball') {
+      body.friction = 0
+      body.frictionAir = 0
+      if (id.includes('toio')) {
+        body.mass = 1000
+        body.density = 1000
+      }
+    }
     if (canvas.example === 'rube-goldberg') {
       console.log(id)
-      if (id.includes('toio-2')) {
+      if (id.includes('toio')) {
         body.friction = 0
       }
-      if (id.includes('toio-3')) {
-        Matter.Body.setDensity(body, 1000)
-        Matter.Body.setMass(body, 1000)
-        // body.friction = 0
-        // body.frictionStatic = 0
-      }
-      if (id.includes('rect-1')) {
-        body.friction = 1
-        body.frictionStatic = 1
-      }
+      // if (id.includes('toio-3')) {
+      //   Matter.Body.setDensity(body, 1000)
+      //   Matter.Body.setMass(body, 1000)
+      //   // body.friction = 0
+      //   // body.frictionStatic = 0
+      // }
     }
 
 
@@ -451,8 +461,10 @@ class Physics extends Component {
       let originPoint = node.getAttr('originPoint') || { x: 0, y: 0 }
       let x = body.position.x
       let y = body.position.y
+      let vx = body.velocity.x
+      let vy = body.velocity.y
       let degree = body.angle * 180 / Math.PI
-      node.setAttrs({ x: x, y: y })
+      node.setAttrs({ x: x, y: y, vx: vx, vy: vy })
       let angleFix = node.getAttr('angleFix')
       if (angleFix) {
         node.rotation(0)

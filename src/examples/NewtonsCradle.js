@@ -24,6 +24,7 @@ class NewtonsCradle {
       shapes.push(line)
     }
 
+    /*
     for(let i = 4; i <= 5; i++) {
       let x = (i === 4) ? start - offset : start + offset * 4
       let toio = {
@@ -35,7 +36,6 @@ class NewtonsCradle {
       }
       shapes.push(toio) //  this.state.toios.push(toio1)
 
-      /*
       let line = {
         x: 0,
         y: 0,
@@ -44,8 +44,8 @@ class NewtonsCradle {
         physics: 'constraint'
       }
       shapes.push(line)
-      */
     }
+    */
 
     canvas.setState({ shapes: shapes })
   }
