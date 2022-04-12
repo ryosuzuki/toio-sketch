@@ -15,6 +15,7 @@ import RubeGoldberg from './examples/RubeGoldberg'
 import Pinball from './examples/Pinball'
 import Rope from './examples/Rope'
 import Slider from './examples/Slider'
+import Triangle from './examples/Triangle'
 
 window.Konva = Konva
 let debug = false
@@ -46,15 +47,17 @@ class Canvas extends Component {
     this.pinball = new Pinball()
     this.rope = new Rope()
     this.slider = new Slider()
+    this.triangle = new Triangle()
 
     // this.slingshot.init(this)
     // this.piston.init(this)
     // this.newtonsCradle.init(this)
-    this.pong.init(this)
+    // this.pong.init(this)
     // this.pinball.init(this)
     // this.rubeGoldberg.init(this)
     // this.rope.init(this)
     // this.slider.init(this)
+    this.triangle.init(this)
   }
 
   componentDidMount() {
@@ -88,7 +91,7 @@ class Canvas extends Component {
           y: 1024 * ((cube.y - 45) / (455 - 45)),
           rotation: cube.angle,
           type: 'toio',
-          // physics: 'float',
+          physics: 'float',
           toioId: cube.id
         }
         if (this.example === 'slingshot') {
@@ -712,6 +715,7 @@ class Canvas extends Component {
                     )
                   }
                   if (shape.type === 'linetwo') { // contraint between two bodies
+                    let color = shape.strokeColor ? shape.strokeColor : App.strokeColor
                     return (
                       <Line
                         key={ i }
@@ -722,7 +726,7 @@ class Canvas extends Component {
                         y={ shape.y }
                         points={ shape.points }
                         strokeWidth={ App.strokeWidth }
-                        stroke={ App.strokeColor }
+                        stroke={ color }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }
