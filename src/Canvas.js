@@ -50,10 +50,10 @@ class Canvas extends Component {
     // this.slingshot.init(this)
     // this.piston.init(this)
     // this.newtonsCradle.init(this)
-    // this.pong.init(this)
+    this.pong.init(this)
     // this.pinball.init(this)
     // this.rubeGoldberg.init(this)
-    this.rope.init(this)
+    // this.rope.init(this)
     // this.slider.init(this)
   }
 
@@ -88,7 +88,7 @@ class Canvas extends Component {
           y: 1024 * ((cube.y - 45) / (455 - 45)),
           rotation: cube.angle,
           type: 'toio',
-          physics: 'float',
+          // physics: 'float',
           toioId: cube.id
         }
         if (this.example === 'slingshot') {
@@ -375,6 +375,28 @@ class Canvas extends Component {
     let bb = node.getClientRect()
     let shape = this.estimateShape(points, bb)
 
+    let customToio = false
+    let shapes = this.state.shapes
+    console.log(shapes)
+    for (let i = 0; i < shapes.length; i++) {
+      let sh = shapes[i]
+      if (sh.type.includes('toio')) {
+        if (bb.x < sh.x &&
+            sh.x < bb.x + bb.width &&
+            bb.y < sh.y &&
+            sh.y < bb.y + bb.height
+        ) {
+          shape.type = 'toio-circle'
+          shape.toioId = sh.toioId
+          shape.physics = 'float'
+          shapes[i] = shape
+          customToio = true
+        }
+      }
+    }
+    let newShapes = shapes
+    console.log(newShapes)
+
     let transform = new Transform()
     let paths = transform.getPaths(points, bb, shape)
 
@@ -391,8 +413,14 @@ class Canvas extends Component {
         this.setState({ currentPaths: paths })
       },
       end: (shapes) => {
-        this.state.shapes.push(shape)
-        this.setState({ currentPaths: [], shapes: this.state.shapes })
+        console.log(customToio)
+        console.log(shape)
+        if (customToio) {
+          this.setState({ currentPaths: [], shapes: newShapes })
+        } else {
+          this.state.shapes.push(shape)
+          this.setState({ currentPaths: [], shapes: this.state.shapes })
+        }
       }
     })
   }
@@ -602,11 +630,13 @@ class Canvas extends Component {
                         onTap={ this.onShapeClick.bind(this, i) }
                       />
                     )
-                      {/*
+                  }
+                  if (shape.type === 'toio-circle') {
+                    return (
                       <Circle
                         key={ i }
-                        id={ `toio-${i}` }
-                        name={ `toio-${i}` }
+                        id={ `toio-circle-${i}` }
+                        name={ `toio-circle-${i}` }
                         physics={ shape.physics }
                         x={ shape.x }
                         y={ shape.y }
@@ -618,7 +648,7 @@ class Canvas extends Component {
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }
                       />
-                      */}
+                    )
                   }
                   if (shape.type === 'rect') {
                     return (
@@ -730,7 +760,7 @@ class Canvas extends Component {
                         start={ shape.start }
                         end={ shape.end }
                         strokeWidth={ App.strokeWidth }
-                        stroke={ App.strokeColor }
+                        stroke={ App.toioStrokeColor }
                         draggable
                         onClick={ this.onShapeClick.bind(this, i) }
                         onTap={ this.onShapeClick.bind(this, i) }

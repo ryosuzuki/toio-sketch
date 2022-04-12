@@ -74,16 +74,29 @@ class Physics extends Component {
       let bodies = this.engine.world.bodies
       for (let body of bodies) {
 
+        let maxSpeed = 1000
+
         // For pong
-        let maxSpeed = 2.5
-        let id = body.id
-        if (id.includes('toio')) {
-          body.mass = 1000
+        if (canvas.example === 'pong') {
+          let maxSpeed = 2.5
+          let id = body.id
+          if (id.includes('toio')) {
+            body.mass = 1000
+          }
+          body.restitution = 1
         }
-        body.restitution = 1
 
         // For slingshot
-        // let maxSpeed = 5
+        if (canvas.example === 'slingshot') {
+          maxSpeed = 4
+          let id = body.id
+          if (id.includes('toio')) {
+            body.mass = 1000
+            body.friction = 0
+            body.frictionAir = 0
+          }
+        }
+
 
         if (body.velocity.x > maxSpeed) {
           Matter.Body.setVelocity(body, { x: maxSpeed, y: body.velocity.y })

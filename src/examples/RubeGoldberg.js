@@ -5,7 +5,8 @@ class RubeGoldberg {
 
     let slopes = [
       { x: 500, y: 350, width: 600, height: 50, angle: 2},
-      { x: 650, y: 800, width: 600, height: 50, angle: -2},
+      { x: 650, y: 800, width: 400, height: 50, angle: -2},
+      { x: 900, y: 792, width: 100, height: 50, angle: 0},
     ]
     for (let slope of slopes) {
       let shape = {
